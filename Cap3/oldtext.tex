@@ -1,0 +1,40 @@
+\begin{figure}
+    \centering
+\begin{tikzpicture}[node distance=3cm]
+\node (start) [startstop] {DFT calculation};
+\node (character) [decision, below of=start, yshift=-1cm] {Band character};
+%\node (valence)  [process, below of=character, xshift=-4cm] {Valence Correction};
+%\node (valenceconduction)  [process, below of=character, xshift=-4cm] {Valence and Conduction Corrections};
+\node (correction) [process, below of=character, xshift=-4cm] {Simple correction};
+\node (fractional) [process, below of=character,xshift=4cm] {Fractional correction};
+\node (potential) [process, below of=fractional, xshift=-4cm] {Calculate corrected potential using \ref{cut_eq}};
+\node (extremum) [process, below of=potential] {Find CUT};
+\node (correction2) [process, below of=extremum, ] {DFT with corrected potentials};
+\node (results) [decision, below of=correction2, ] {Satisfactory results?};
+\node (repeat) [process, left of=results, xshift=-2cm] {Correct valence and conduction bands};
+\node (stop) [startstop, below of=results,] {Stop};
+
+\draw [arrow] (start) -- (character);
+\draw [arrow] (character) -- node[anchor=east] {concentrated character.} (correction);
+\draw [arrow] (character) -- node[anchor=west] {distributed character.} (fractional);
+\draw [arrow] (correction) -- (potential);
+\draw [arrow] (fractional) -- (potential);
+\draw [arrow] (potential) -- (extremum);
+\draw [arrow] (extremum) -- (correction2);
+\draw [arrow] (correction2) -- (results);
+\draw [arrow] (results) -- node[anchor=west] {Yes} (stop);
+\draw [arrow] (results) -- node[anchor=north] {No} (repeat);
+\draw [->, overlay] (repeat) |- (potential);
+%\draw [arrow] (repeat) -- node[anchor=north] {Condiction and Valence Bands} (start);
+
+\end{tikzpicture}
+\caption{Flowchart of the DFT-1/2 method}
+\label{dfthalf-flow}
+\end{figure}
+
+\section{VASP}
+The Vienna Ab initio Simulation Package (VASP) has emerged as a fundamental tool in the field of computational materials science. By utilizing density functional theory (DFT), VASP enables researchers to perform electronic structure calculations and simulations, providing insights into the behavior and properties of materials at the atomic level.
+
+VASP employs advanced numerical methods and algorithms to solve the Kohn-Sham equations, which describe the quantum mechanical behavior of electrons in a material. By utilizing DFT, VASP predicts various properties, including total energy, electronic structure, forces, and stress. The software offers a wide range of features, such as the ability to model complex systems.
+
+The Minushalf CLI uses VASP outputs to perform the necessary calculations and modifications to apply the DFT -1/2 method. In the sections below describing the program, we will refer to various files that are output from this software.

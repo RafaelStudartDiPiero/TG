@@ -1,0 +1,60 @@
+\section{Motivation}
+Studying the properties of matter  and its microscopic behavior has always been of great interest to the brightest minds of mankind. From Ancient Greece, where the idea of the atom was raised by Democritus and Leucippus, until the last centuries, in which scientists such as Dalton, Thomson, Rutherford, Bohr, and Sommerfeld proposed the first models to understand one of the fundamental units of the matter: the atom. With the development of the Schrödinger equation, it was possible to model atomic behavior accurately. However, the great excitement regarding the Schrödinger equation came down to the fact that it is impossible to solve the Schrödinger equation for complex atoms and systems. To solve this problem, brilliant researchers undertook several attempts until, in 1964, physicists Walter Kohn and Pierre Hohenberg laid the foundations for the density functional theory (DFT) \cite{PhysRev.136.B864}.
+
+\medskip
+
+DFT is a method that seeks to map interactive problems to non-interactive problems, expressing all the equations in terms of an arbitrary variable: the electronic density. When dealing with non-interactive problems, which are easier to solve, this approach allowed the simulation of complex atoms and solids. \cite{burke2015abc}
+
+\medskip
+
+DFT produces incredible results when calculating the structural properties of crystals in the ground state. Among them, one mentions the lattice constant, which is calculated with an accuracy of one to two percent about the experimental value \cite{DFTCoursera} \cite{PhysRevB.79.085104}. However, this technique does not produce satisfactory results in predicting electronic properties, especially the bang gap, which is underestimated by about 40\% \cite{PhysRevLett.51.1884}.
+
+
+\medskip 
+
+As the band gap is of vital importance for several areas of research like nanotechnology, solar cells, and optoelectronics, several methods have been standard to overcome this challenge. GW \cite{RevModPhys.74.601} technique and approaches that use hybrid functionals are among the most effective when it comes to producing band gaps near the experimental results. While both methods yield superior results compared to the standard DFT approach, they have a significant computational complexity, with time and memory requirements about three and two orders of magnitude higher, respectively, than the standard DFT.\cite{Pela_2015}.
+
+\medskip
+
+To address this problem, the DFT -1/2 method was developed \cite{doi:10.1063/1.3624562} \cite{PhysRevB.78.125116}, which extends the technique of Slater's half occupation \cite{PhysRevB.5.844}\cite{SLATER19721}, formalized by Janak's theorem, for crystals. Furthermore, DFT -1/2 combines the computational efficiency of standard DFT with the results achieved by approaches considered state-of-the-art in materials science.\cite{Pela_2015}.  
+
+\medskip
+
+The DFT -1/2 method has been used in a variety of studies to calculate the electronic properties of materials, particularly band gaps in crystals. For example, in a study published in 2020, \cite{doi:10.1021/acs.jpcc.0c03672}, the method was used to investigate the properties of Halide Perovskites, which can be used in solar cells in reason of their high conversion efficiency \cite{SollarCellEff}. The authors found that the calculated band gap was in good agreement with experimental results, demonstrating the effectiveness of the method.
+
+\medskip
+Due to its computational efficiency, the scientific community is increasingly adopting the method. Hence, one noticed the need to establish a reproducible approach for applying the DFT method. Thus, in 2021 a command line interface called Minushalf was developed, which implements and automates the application of the DFT -1/2 method. This work aims to describe and validate the Minushalf interface by testing several compounds used in base articles for the DFT -1/2 method.
+
+
+\medskip
+
+Currently, the DFT -1/2 method is increasingly being adopted by the scientific community. In order to standardize the use of the method, a command line interface called Minushalf was proposed to automate the complete DFT -1/2 application process and its steps, making it easier for users to apply in their research.
+
+\section{Objective}
+This study aims to present a standardized approach for using the DFT -1/2 method for calculating band gaps in crystals. With the primary objective of facilitating users in obtaining accurate and reliable results, particularly in complex systems. One believes that a software package will streamline the use of this method and contribute to advancing research in materials science, condensed matter physics, and related fields.
+
+
+\section{Contributions}
+The work on the DFT -1/2 method and the creation of the Minushalf command line interface has several potential contributions, particularly for the GMSN (Group of Semiconductors Materials and Nanotechnology) research group where the work is being currently developed.
+
+\medskip
+
+Firstly, the Minushalf command line interface will automate the complete DFT -1/2 algorithm process and all its steps, making it easier for researchers to apply the method for any purpose. This will save significant time and resources, particularly in complex systems, and will make it more accessible to researchers who may not have extensive experience in the field.
+
+\medskip
+
+Furthermore, the DFT -1/2 method itself has the potential to contribute to the development of new materials and technologies by providing accurate calculations of electronic properties such as band gaps. This can be particularly useful in applications such as solar cells, 2D materials, and other semiconductor devices where electronic properties are crucial to performance.
+
+\medskip
+
+Overall, the work on the DFT -1/2 method and the creation of the Minushalf command line interface has the potential to make significant contributions to the field of materials science. The GMSN will benefit from these contributions by being able to effectively carry out their research and make valuable contributions to the field.
+\section{Organization of this work}
+
+One organized the remaining chapters of this final paper as follows:
+
+\begin{itemize}
+    \item Chapter 2 provides an introduction to the DFT, DFT -1/2 method, and command line interfaces, which are important for understanding the content of the remaining chapters. 
+    \item Chapter 3 describes the Minushalf command line interface, its usage, and its performance.
+    \item Chapter 4 presents the results of a comparison between the outcomes of the DFT and those obtained using the DFT -1/2 method.
+    \item Chapter 5 provides insights and suggests future research paths.
+\end{itemize}

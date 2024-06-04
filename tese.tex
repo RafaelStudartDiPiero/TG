@@ -1,0 +1,227 @@
+
+% Para 'Draft Version'/'Versao Preliminar' com data no rodape, adicionar 'dv':
+%   \documentclass[dsc, dv]{ita} 
+% Para trabalhos em Inglês, adicionar 'eng':
+%   \documentclass[dsc, eng]{ita}
+%		\documentclass[dsc, eng, dv]{ita}
+
+\documentclass[tg, eng]{ita}    % ITA.cls based on standard book.cls 
+  % \documentclass[tg]{ita}			= Trabalho de Graduacao
+%   								msc     		= Dissertacao de Mestrado
+%   								dsc      		= Tese de Doutorado
+
+
+% Quando alterar a classe, por exemplo de [msc] para [msc, eng]) rode mais uma vez o botão BUILD OUTPUT caso haja erro
+
+\usepackage{ae}
+\usepackage{epsfig}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage[section]{placeins}
+\usepackage{pdfpages}
+
+\usepackage{longtable}
+\usepackage{listings}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage[inkscapeformat=png]{svg}
+\usetikzlibrary{shapes.geometric, arrows}
+\lstset{basicstyle=\ttfamily,
+  showstringspaces=false,
+  commentstyle=\color{red},
+  keywordstyle=\color{blue}
+}
+\usepackage[T1]{fontenc}
+\usepackage{minted}
+
+\usepackage{fancyvrb}
+
+
+
+%++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+% Espaçamento padrão de todo o documento
+%++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+\onehalfspacing
+
+%singlespacing Para um espaçamento simples
+%onehalfspacing Para um espaçamento de 1,5
+%doublespacing Para um espaçamento duplo
+
+%++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+% Identificacoes (se o trabalho for em inglês, insira os dados em inglês)
+% Para entradas abreviadas de Professora (Profa.) em português escreva: Prof$^\textnormal{a}$.
+%++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+\course{Computer Engineering} % Programa de PG ou Curso de Graduação
+% \area{Sistemas Aeroespaciais e Mecatrônica} % Área de concentração na PG (Não utilizado no caso de TG)
+
+% Autor do trabalho: Nome Sobrenome
+\authorgender{masc} %sexo: masc ou fem
+\author{Rafael}{Studart Mattos Di Piero}
+\itaauthoraddress{Rua do H8A, Ap. 125}{12.228-460}{São José dos Campos--SP}
+
+
+% Titulo da Tese/Dissertação
+\title{Multi-Agent Graph Exploration Without Communication}
+
+% Orientador
+\advisorgender{masc}                    % masc ou fem
+\advisor{Prof.~Dr.}{Luiz Gustavo Bizarro Mirisol}{ITA}
+
+% Coorientador 
+\coadvisorgender{masc} % masc ou fem
+\coadvisor{Prof.~Dr.}{Vitor Venceslau Curtis}{ITA}
+
+% Pró-reitor da Pós-graduação
+%\bossgender{masc}  % masc ou fem
+%\boss{Prof.~Dr.}{Sicrano}
+
+%Coordenador do curso no caso de TG
+\bosscoursegender{masc}	% masc ou fem
+\bosscourse{Prof.~Dr.}{Marcos Ricardo Omena de Albuquerque Máximo}
+
+% Palavras-Chaves informadas pela Biblioteca -> utilizada na CIP
+\kwcip{Graph}
+\kwcip{Search}
+\kwcip{Multi-agent}
+\kwcip{Mixed Radix}
+% membros da banca examinadora
+
+\examiner{Prof. Dr.}{Ivan Guilhon Mitoso Rocha}{Presidente}{ITA}
+\examiner{Prof. Dr.}{Lara Kühl Teles}{}{ITA}
+\examiner{Prof. Dr.}{Karla Donato Fook}{}{ITA}
+\examiner{Prof. Dr.}{Marcelo Marques}{}{ITA}
+
+% Data da defesa (mês em maiúsculo, se trabalho em inglês, e minúsculo se trabalho em português) 
+\date{21}{May}{2024}
+
+% Número CDU - (somente para TG)
+\cdu{CDU}
+
+% Glossario
+\makeglossary
+\frontmatter
+
+\begin{document}
+% Folha de Rosto e Capa para o caso do TG
+\maketitle
+
+% Dedicatoria:
+\begin{itadedication}To my family, for their unconditional love and constant support. To my friends, for standing by me through all moments. 
+\end{itadedication}
+
+% Agradecimentos
+\begin{itathanks}
+\input{Cap0/agradecimentos}
+\end{itathanks}
+
+
+% Epígrafe
+\thispagestyle{empty}
+\ifhyperref\pdfbookmark[0]{\nameepigraphe}{epigrafe}\fi
+\begin{flushright}
+\begin{spacing}{1}
+\mbox{}\vfill
+{\sffamily\itshape
+"The journey of a thousand miles begins with one step."\\
+}
+--- \textsc{
+Lao Tzu
+}
+\end{spacing}
+\end{flushright}
+
+% Resumo
+\begin{abstract}
+\noindent
+\input{Cap0/resumo}
+\end{abstract}
+
+% Abstract
+\begin{englishabstract}
+\noindent
+\input{Cap0/abstract}
+\end{englishabstract}
+
+% Lista de figuras
+\listoffigures %opcional
+
+% Lista de tabelas
+% \listoftables %opcional
+
+% Lista de Algoritmnos
+\input{Cap0/listaalgoritmos} %opcional
+
+% Lista de abreviaturas
+\listofabbreviations
+\input{Cap0/listaabreviaturas} %opcional
+
+% Lista de simbolos
+% \listofsymbols
+% \input{Cap0/listasimbolos} %opcional
+
+% Sumario
+\tableofcontents
+
+\mainmatter
+% Os capitulos comecam aqui
+
+\chapter{Introduction}
+\input{Cap1/cap1}
+
+\chapter{Methodology}
+\input{Cap2/cap2}
+
+\chapter{Minushalf}
+\input{Cap3/cap3}
+
+\chapter{Results and Discussion}
+\input{Cap4/cap4}
+
+\chapter{Conclusions and Perspectives}
+\input{Cap5/cap5}
+
+
+
+% REFERENCIAS BIBLIOGRAFICAS
+\renewcommand\bibname{\itareferencesnamebabel} %renomear título do capítulo referências
+\bibliography{Referencias/referencias}
+
+% Apendices
+%\appendix
+%\chapter{Tópicos de Dilema Linear} %opcional
+%\input{ApeA/apendiceA}
+
+% Anexos
+%\annex
+%\chapter{Exemplo de um Primeiro Anexo} %opcional
+%\input{AneA/anexoA}
+
+% Glossario
+%\itaglossary
+%\printglossary
+
+% Folha de Registro do Documento
+% Valores dos campos do formulario
+\FRDitadata{1 de Novembro de 2023}
+\FRDitadocnro{DCTA/ITA/TC-067/2023} %(o número de registro você solicita a biblioteca)
+\FRDitaorgaointerno{Instituto Tecnológico de Aeronáutica -- ITA}
+%Exemplo no caso de pós-graduação: Instituto Tecnol{\'o}gico de Aeron{\'a}utica -- ITA
+\FRDitapalavrasautor{Density Functional Theory; Computational Physics; Python; Command Line Interface; Nelder Mead.}
+\FRDitapalavrasresult{Automação, Teoria de densidade funcional; Desenvolvimento de software; Complexidade computacional; Interfaces; Python (linguagem de programação); Computação.}
+%Exemplo no caso de graduação (TG):
+\FRDitapalavraapresentacao{ITA, São José dos Campos. Curso de Graduação em Engenharia de Computação. Orientador: Prof. Dr. Ivan Guilhon Mitoso Rocha; coorientador: Prof. Dr. Lara Kühl Teles Publicado em 2023.}
+%Exemplo no caso de pós-graduação (msc, dsc):
+%\FRDitapalavraapresentacao{ITA, São José dos Campos. Curso de Mestrado. Programa de Pós-Graduação em Engenharia Aeronáutica e Mecânica. Área de Sistemas Aeroespaciais e Mecatrônica. Orientador: Prof.~Dr. Adalberto Santos Dupont. Coorientadora: Prof$^\textnormal{a}$.~Dr$^\textnormal{a}$. Doralice Serra. Defesa em 05/03/2015. Publicada em 16/06/2023.}
+\FRDitaresumo{\input{Cap0/abstract}}
+%  Primeiro Parametro: Nacional ou Internacional -- N/I
+%  Segundo parametro: Ostensivo, Reservado, Confidencial ou Secreto -- O/R/C/S
+\FRDitaOpcoes{N}{O}
+% Cria o formulario
+\itaFRD
+
+\end{document}

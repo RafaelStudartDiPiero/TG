@@ -1,0 +1,406 @@
+Since the entire theoretical framework was discussed in the previous chapter, this chapter aims to systematize the DFT -1/2 method and explain how to design a program that allows to automate this process. First, a description of the necessary algorithm will be made, explaining all the steps for the application of the DFT -1/2 method, and then, a description of the program architecture will be made explaining how it was designed to replicate the correct steps of the DFT -1/2 method.
+\section{DFT -1/2 workflow}
+The following is a sequential description of the steps required to apply the DFT-1/2 method to a semiconductor. The steps are represented graphically in Figure \ref{dfthalf-flow}.
+\begin{enumerate}
+    \item The first step of the DFT-1/2 method is to analyze the results of a standard DFT calculation for a given compound. In this step, the character of the valence band is verified. If the valence band character is dominated by an orbital of a certain atom, a simple valence correction is made. However, in case the character is considerably distributed among several orbitals, a fractional correction will be chosen.
+    \item After that, the occupation of half an electron will be done in the respective atoms and the occupied potential will be calculated.
+    \item After the potential for the occupied atom has been calculated, the equations \ref{cut_eq}. \ref{cut_eq_2} are used to discovering the corrected potential of the compound. To find out, the CUT parameter, several DFT -1/2 calculations are made to find an extreme of the band gap.
+    \item Once this extreme is found, a standard DFT calculation is performed with corrected potentials to find the band gap value.
+    \item If the results are not near to the experimental results and the conduction band plays a central role in the electronic structure of the atom, the steps are repeated, correcting the valence band and the conduction band at the same time.
+\end{enumerate}
+\begin{figure}[!ht]
+        \centering
+        \includesvg{images/dftwkfl.svg}
+        \caption{Flowchart of the DFT-1/2 method.}
+        \label{dfthalf-flow}
+\end{figure}
+
+\section{Architeture}
+To implement the aforementioned workflow, the software architecture comprises three main components: the command line interface, the program responsible for performing the DFT calculation, and the atomic program. For DFT calculations, one typically utilizes the VASP. However, there are plans to expand the software's capabilities to include open-source programs like Quantum Espresso. 
+
+The relationship between these components is as follows: the CLI orchestrates the others, ensuring that they produce the necessary results for the DFT -1/2 calculation. This can be visualized in Figure \ref{min-arch}, which illustrates the Minushalf architecture.
+\begin{figure}[!ht]
+        \centering
+        \includesvg[width=10cm,height=9cm]{images/arquiteture.drawio.svg}
+        \caption{Minushalf Architecture.}
+        \label{min-arch}
+\end{figure}
+
+\section{UML Diagrams}
+In order to ensure the software's adaptability to changes and new implementations, renowned design patterns were employed. An abstract factory pattern was utilized to implement the interface between the code and the packages responsible for DFT calculations. Additionally, a common interface was adopted, enabling users to test and implement new corrections, facilitating benchmarks and advancements in the DFT -1/2 method. The utilization of these design patterns is clearly shown in the UML diagrams illustrated in Figures \ref{img::cor} and \ref{img::fac}.
+\begin{figure}[!ht]
+        \centering
+        \includesvg[width=7cm]{images/corr.svg}
+        \caption{UML diagram for the correction class.}
+        \label{img::cor}
+\end{figure}
+
+\begin{figure}[!ht]
+        \centering
+        \includesvg[width=15cm, height=8cm]{images/fac.svg}
+        \caption{UML diagram for the software class.}
+        \label{img::fac}
+\end{figure}
+\section{Adding new software integrations}
+Since the purpose of Minushalf is to facilitate integrations with software that performs ab initio calculations, in addition to the current integration with VASP, it is necessary to explain how to add new software for future work within the same organization or even open-source contributions. Thus, to implement a new software, it would be necessary to create a new factory that follows the same interface presented in Figure \ref{img::fac}. It is important to note that the implementation details are different for each software, but the interface should remain the same. To integrate the implemented software interface and its factory class into your application's main codebase, you should add a new entry to the $Softwares$ Enum and include it in the $get_software_factory$ function. For more details, extensive documentation has been created and is available at https://github.com/gmsn-ita/minushalf/blob/main/minushalf/softwares/DEVELOPER.md, explaining how to perform this procedure.
+
+
+
+\section{CLI description}
+In the following section, we will provide a detailed description of all the commands available in the Minushalf command line interface.
+\subsection{The vbm-character command}
+\label{vbm}
+Given the eigenvalues obtained by the Kohn-Shan equation and the Fermi level energy, the command identifies the location of the last valence band and returns, in percentage, the character relative to each orbital type ($ s, p, d, f ... $) and each atom. To acquire all this information, the command checks the files PROCAR, EIGENVAL, and vasprun.xml, which are output files from the VASP program. The example below shows the output of the command for the group-IV-based honeycomb crystal SiC.
+
+\begin{lstlisting}[language=bash,caption={Example of the vbm-character for SiC-2D}]
+$ minushalf vbm-character
+|    |   d |   p |   s |
+|:---|----:|----:|----:|
+| Si |   0 |   0 |   0 |
+| C  |   0 |  100|   0 |
+\end{lstlisting}
+
+
+\subsection{The cbm-character command}
+\label{cbm}
+This command acts in the same way as described in the section \nameref{vbm}, the only difference is that it returns the projections for the first conduction band. The example below shows the output of the command for the group-IV-based honeycomb crystal SiC.
+
+
+\begin{lstlisting}[language=bash,caption={Example of the cbm-character for SiC-2D}]
+$ minushalf cbm-character
+
+
+|    |   d |   p |   s |
+|:---|----:|----:|----:|
+| Si |   0 |  85 |   0 |
+| C  |   0 |  15 |   0 |
+\end{lstlisting}
+
+\subsection{The band-character command}
+\label{cbm}
+Similar to the commands \nameref{cbm} and \nameref{vbm}, this command returns a band projection in percentages. However, it gives the user freedom to choose kpoint and the band number from which the projections will be extracted. This information is passed as arguments on the command line. The example below shows the output of the command for the group-IV-based honeycomb crystal SiC.
+
+
+\begin{lstlisting}[language=bash,caption={Example of the band-character for SiC-2D}]
+$ minushalf band-character 2 6
+
+|    |   d |   p |   s |
+|:---|----:|----:|----:|
+| Si |   0 |   3 |   0 |
+| C  |   0 |  97 |   0 |
+
+
+\end{lstlisting}
+
+\subsection{The band-gap command}
+
+Given the eigenvalues and the energy of the fermi level, this command finds the last valence band and the first conduction band and then returns information about these bands and the semiconductor band gap. To obtain this information, the command checks the PROCAR, EIGENVAL, and vasprun.xml files, which are outputs from the VASP program. The example below shows the output of the command for the group-IV-based honeycomb crystal SiC.
+
+
+\begin{lstlisting}[language=bash,caption={Example of the band-gap for SiC-2D}]
+$ minushalf band-gap -s VASP
+
+
+VBM: Kpoint 48, band 4 and eigenval -3.683426
+CBM: Kpoint 68, band 5 and eigenval -1.141163
+Gap: 2.542eV
+\end{lstlisting}
+
+\subsection{The run-atomic command}
+\label{atomic}
+This command runs the atomic program, which is a modified version of the program \href{https://siesta.icmab.es/SIESTA_MATERIAL/Pseudos/atom_licence.html}{ATOM} by professor \href{http://lattes.cnpq.br/4694847711359239}{Luiz Guimarães Ferreira}. The respective modifications are listed below:
+
+\begin{itemize}
+	\item In this version, the maximum number of interactions (‘maxit’) is read, just after the valence       orbitals. Thus, the input files INP.pg and INP.pt must be renamed to INP.
+	\item Potential was generated to be added to the pseudopotential given by the program. The potential to be added is in the ‘adiciona’ file. The following instruction verifies that the       file exists and, if it exists, is opened and read.
+	\item Creates $VTOTAL$ file with the potential related to the Schrödinger or Dirac equation.
+	\item Creates the psfun.Guima file with the wave functions $ae$, $pg$, and  $pt$.
+	\item The pseudopotential averages are calculated for $r^{2}$ e $r^{4}$. Electrostatic auto energy calculation is also done to valence orbitals.
+\end{itemize}
+
+To execute the command, an input file named INP must be provided. The necessary parameters for the input file are described in the \href{https://siesta.icmab.es/SIESTA_MATERIAL/Pseudos/atom_licence.html}{ATOM Documentation}. 
+
+\medskip
+
+After execution, the following files are returned:
+
+\begin{itemize}
+	\item VTOTAL.ae: Contains the atom potential.
+	\item OUT: Contains detailed information about the run.
+	\item AECHARGE: Contains in four columns values of $r$, the “up” and “down” parts of the total charge density, and the total core charge density (the charges multiplied by $4\pi r^{2}$ ).
+	\item CHARGE: is exactly identical to AECHARGE and is generated for backward compatibility.
+	\item RHO: Like CHARGE, but without the $4\pi r^{2}$ factor
+	\item AEWFNR0...AEWFNR3: All-electron valence wavefunctions as function of radius, for $s$, $p$,$ d$ and $f$ valence orbitals (0,1, 2, 3, respectively $\mid$ some channels might not be available). They include a factor of $r$, and the $s$ orbitals also go to zero at the origin.
+\end{itemize}
+
+\subsection{The create-input command}
+
+This command generates the input file of the \nameref{atomic} command. The parameters required for the command are described below with their respective default values.
+\begin{itemize}
+	\item  Chemical element symbol (Si, Na, Pb...).
+	\item  Exchange-correlation code (Default: pb)
+	\item  Calculation code (Default: ae) 
+\end{itemize}
+
+The example below shows an INP file generated for the $Si$ element:
+
+\begin{lstlisting}[language=bash,caption={Example of INP file for Si}]
+   ae      Si
+ n=Si c=pb
+       0.0       0.0       0.0       0.0       0.0       0.0
+    3    4
+    3    0     2.000     0.000
+    3    1     2.000     0.000
+    3    2     0.000     0.000
+    4    3     0.000     0.000
+100 maxit
+\end{lstlisting}
+
+\subsection{The occupation command}
+This command performs fractional occupation on the atom and generates the pseudopotential for this occupation. The occupation can subtract any fraction of the electron between $0$ and $0.5$, semi-occupation is the default. It requires the following arguments:
+
+\begin{itemize}
+	\item  ORBITAL\_QUANTUM\_NUMBER: A string that defines the orbital(s) in which the occupation will be made, it can assume four values: (0: $s$ $\mid$ 1: $p$ $\mid$ 2: $d$ $\mid$ 3: $f$). if going to modify multiple orbitals, pass a string with numbers separated by commas : (``0,1,2,3'').
+	\item  OCCUPATION\_PERCENTAGE: A string that defines the percentage of half an electron to be used in the occupation. The default is 100\%, which states for $0.5e$. For multiple occupations in different orbitals, pass a string separated by commas (``100,50,40,100''). For simplicity, to avoid the excessive repetition of the number 100, just replace the number with $*$ (``*,30,*''). If this argument is not used, the occupation of half an electron will be made for all orbitals passed as arguments.
+	
+	\item  INP: input file of the \nameref{atomic} command.
+	
+\end{itemize}
+
+After execution, this command returns the following files:
+
+\begin{itemize}
+    \item INP\_OCC : Input file modified for fractional occupation
+    
+    \item INP.ae: A copy of the input file for the calculation.
+    
+    \item VTOTAL\_OCC: Contains the atom potential for fractional occupation.
+    
+    \item  OUT: Contains detailed information about the run.
+    
+    \item  AECHARGE: Contains in four columns values of $r$, the “up” and “down”  parts of the total     charge density, and the total core charge density (the charges multiplied by $4\pi r^{2}$ ).
+    
+    \item CHARGE: is exactly identical to AECHARGE and is generated for backward compatibility.
+    
+    \item RHO: Like CHARGE, but without the $4\pi r^{2}$ factor
+    
+	\item AEWFNR0...AEWFNR3: All-electron valence wave functions as function of radius, for $s$, $p$,$ d$ and $f$ valence orbitals (0,1, 2, 3, respectively $\mid$ some channels might not be available). They include a factor of $r$, the $s$ orbitals also go to zero at the origin.
+
+
+\end{itemize}
+\subsection{The correct-potfile command}
+This command generates the occupied atomic potential file used for ab initio calculations. Since VASP software is used for that task, the program corrects the potential of the POTCAR file for the potential of a fractional occupation in the solid. It requires the following files:
+
+\begin{itemize}
+    \item VTOTAL.ae: pseudopotential of the atom with all electrons
+    
+    \item VTOTAL\_OCC: pseudopotential of the occupied atom
+    
+    \item INP\_OCC: Input file for the run-atomic command of the occupied atom
+    
+    \item  POTCAR: Potential file used as input by VASP.
+
+\end{itemize}
+
+In addition, the following options can be provided to specify how the correction should be made:
+
+\begin{itemize}
+    \item Correction code [VALENCE$\mid$CONDUCTION]: Indicates whether the correction should be made in the valence band or the conduction band.  [default: VALENCE]
+    
+    \item Cut: distance value used to cut the potential artificially generated by fractional atomic occupation, it can be passed as a unique value or as a range. [default: 2.0]
+    
+    \item Amplitude: Scaling factor to be used to correct the artificially generated potential. In the vast majority of cases, the amplitude value is 1.0. However, there are some special cases where this value needs to be adjusted \cite{PhysRevB.95.045126}. Therefore, we recommend that you do not change this value unless you know exactly what you are doing. [default: 1.0]
+\end{itemize}
+
+After executing the command, it returns the corrected potential file(s). The nomenclature pattern for the files is explained below :
+
+\begin{itemize}
+    \item POTCARcut\{CUT\_VALUE\} (If amplitude is equal to 1.0)
+    \item POTCARcut\{CUT\_VALUE\}A\{AMPLITUDE\_VALUE\} (If amplitude is different from 1.0)
+\end{itemize}
+
+    
+\subsection{The execute command}
+
+This command automates the use of the DFT -1/2. It uses the Nelder-Mead algorithm \cite{10.1093/comjnl/7.4.308} to find the optimal values of CUT(S) and generates a text file with all the respective CUTS and the final value of the gap. To function correctly, the command requires the following files to be provided:
+
+\begin{itemize}
+    \item minushalf.yaml : Parameters file. Check the \nameref{minushalf-input} section for a more detailed description.
+    \item Files needed to perform the ab initio calculations. They must be in the same directory as the input file minushalf.yaml
+    \item Folder with the potential files for each atom in the crystal. The files must be named in the following pattern: POTCAR.\{LOWERCASE\_CHEMICAL\_SYMBOL\}. Ex: POTCAR.na
+\end{itemize}
+
+After executing it, the following outputs are returned:
+
+\begin{itemize}
+    \item File that contains the optimal values of the cuts and the final value of the Gap.
+    \item corrected\_valence\_potfiles: Potential files corrected with optimum valence cuts.
+    \item  Potential files corrected with optimum conduction cuts.
+\end{itemize}
+
+The example below shows the output file minushalf\_results.dat  for simple valence and  conduction corrections in the group-IV-based honeycomb crystal SiC.
+
+
+\begin{lstlisting}[language=bash,caption={Example of minushalf\_results.dat for SiC-2D}]
+Valence correction cuts:
+        (C,p):3.13 a.u
+-------------------------------
+Conduction correction cuts:
+        (Si,p):2.77 a.u
+-------------------------------
+GAP: 4.37eV
+\end{lstlisting}
+
+Finally, the description of the execute command can be  found on the sequence diagram below \ref{fig::execute_seq}.
+\begin{figure}[!ht]
+        \centering
+        \includesvg[width=\textwidth,height=9cm]{images/execute(4).svg}
+        \caption{Sequence diagram of the execute command.}
+        \label{fig::execute_seq}
+\end{figure}
+
+\subsection{The minushalf.yaml file}
+\label{minushalf-input}
+In this section, one will describe all the tags and ways of configuring the execute command input file.
+
+\subsubsection{The software tag}
+This tag specifies the software that to perform ab initio calculations. For now, the command supports the following values for the software tag:
+\begin{itemize}
+    \item VASP (Default value)
+\end{itemize}
+Currently, minushalf only supports one software, but one hopes to add more soon.
+
+\begin{minted}[
+    gobble=4,
+    frame=single,
+    linenos
+  ]{yaml}
+    software: VASP
+  \end{minted}
+ 
+\subsubsection{The vasp tag}
+The vasp tag specifies the command needed to perform first-principles calculations. This tag has the following fields:
+
+\begin{itemize}
+    \item command: Command used to perform first-principles calculations.\\ (Default: ['mpirun','vasp'])
+\end{itemize}
+
+The $mpirun$ command is used for convenience and can be overridden depending on the local settings of the user\'s machine. The example below  shows the use of the vasp tag in the $minushalf.yaml$ file:
+
+\begin{minted}[
+    gobble=4,
+    frame=single,
+    linenos
+  ]{yaml}
+    vasp:
+        command: ['mpirun','-np','6','vasp']
+  \end{minted}
+  
+ \subsubsection{The atomic\_program tag}
+ The atomic\_program tag  specifies the settings for the atomic program execution. These settings are:
+ 
+ \begin{itemize}
+     \item exchange\_correlation\_code: Functional of exchange and correlation (Default: pb)
+     \item calculation\_code: Calculation code for the atomic program (Default: ae)
+     \item max\_iterations: Maximum number of iterations performed by the atomic program (Default: 100)
+     
+ \end{itemize}
+ 
+ The values that the exchange\_correlation\_code tag can assume are respectively listed below:
+ 
+ \begin{itemize}
+     \item ca: Ceperley-Alder
+     \item wi: Wigner
+     \item hl: Hedin-Lundqvist
+     \item gl: Gunnarson-Lundqvist
+     \item bh: Von Barth-Hedin
+     \item pb: PBE scheme by Perdew, Burke, and Ernzerhof
+     \item rp: RPBE scheme by Hammer, Hansen, and Norskov
+     \item rv: revPBE scheme by Zhang and Yang
+     \item bl: BLYP (Becke-Lee-Yang-Parr) scheme
+ \end{itemize}
+ For calculation\_code tag, there is only one value:
+  \begin{itemize}
+     \item ae: All electrons
+ \end{itemize}
+ 
+The example below shows the use of atomic\_program tag in the \textbf{minushalf.yaml} file:
+
+\begin{minted}[
+    gobble=4,
+    frame=single,
+    linenos
+  ]{yaml}
+    atomic_program:
+        exchange_correlation_code: wi
+        calculation_code: ae
+        max_iterations: 200
+  \end{minted}
+  
+ \subsubsection{The correction tag}
+ The correction tag specifies how the DFT -1/2 method is executed. It contains the following parameters:
+ 
+ \begin{itemize}
+     \item correction\_code: Code that specifies the potential correction (Default: v)
+     \item potfiles\_folder: Path to the folder that holds the potential files for each atom. The files must be named in the following pattern POTCAR.\{LOWERCASE\_CHEMICAL\_SYMBOL\} (Default: minushalf\_potfiles)
+     \item amplitude: Scaling factor to be used to correct the artificially generated potential. In the vast majority of cases, the amplitude value is 1.0. However, there are some special cases where this value needs to be adjusted \cite{PhysRevB.95.045126}. Therefore, we recommend that you do not change this value unless you know exactly what you are doing (Default: 1.0)
+     \item valence\_cut\_guess: Initial Guess for the Nelder-Mead algorithm for cut in valence correction (Default: 3.0)
+     \item conduction\_cut\_guess: Initial Guess for the Nelder-Mead algorithm for cut in valence correction (Default: 2.0)
+     \item tolerance: Absolute tolerance for the result of the Nelder-Mead algorithm (Default: 0.01)
+     \item fractional\_valence\_treshold: Threshold $\epsilon$ for fractional valence correction (Default: 10).
+     \item fractional\_conduction\_treshold: Threshold $\epsilon$ for fractional conduction correction (Default: 10).
+     \item overwrite\_vbm: In some special cases \cite{PhysRevB.95.045126}, it is necessary to consider another band as the VBM. This tag is made for these situations. It is necessary to inform the kpoint and the band number that specifies the band location. The program immediately overwrites the old projection values and uses the new values for DFT -1/2 calculations (Default: No overwrite)
+     \item overwrite\_cbm: In some special cases \cite{PhysRevB.95.045126}, it is necessary to consider another band as the CBM. This tag is made for these situations. It is necessary to inform the kpoint and the band number that specifies the band location. The program immediately overwrites the old projection values and uses the new values for DFT -1/2 calculations (Default: No overwrite)
+    \item inplace: This tag allows you to decide whether all calculations will be done in the root folder or not. It is recommended to pass it as $True$ if non-self-consistent calculations are being performed for the Gap calculation, since the program only copies the input files, the output files needed for the non-self-consistent calculation will not be considered (Default: False)
+ \end{itemize}
+ 
+ The values that the correction\_code tag can assume are listed below:
+ \begin{itemize}
+     \item v: Simple valence correction
+     \item vf: Fractional valence correction
+     \item c: Simple conduction correction
+     \item cf: Fractional conduction correction
+     \item vc: Simple valence and simple conduction corrections
+     \item vcf: Simple valence and fractional conduction corrections
+     \item vfcf: Fractional valence and fractional conduction corrections
+ \end{itemize}
+ 
+ The example below shows the use of a correction tag in the \textbf{minushalf.yaml} file:
+ 
+ \begin{minted}[
+    gobble=4,
+    frame=single,
+    linenos
+  ]{yaml}
+        correction:
+            correction_code: vf
+            potfiles_folder: ../potcar
+            amplitude: 3.0
+            valence_cut_guess: 2.0
+            conduction_cut_guess: 1.0
+            tolerance: 0.01
+            fractional_valence_treshold: 15
+            fractional_conduction_treshold: 23
+            overwrite_vbm: [4,9] # Kpoint and band number, respectively
+            overwrite_cbm: [1,3] # Kpoint and band number, respectively
+            inplace: False
+  \end{minted}
+\section{Tests}
+Since the software aims to implement operations and produce results that will be used in the production of scientific papers, it is of vital importance that the program has a validation of its results. Therefore, we chose to use automatic tests to validate the software.
+
+To improve the coverage of all the functionalities of the application, two types of tests were used: unit and integration tests. While unit tests verify the correct behavior of each component of the code, integration tests verify the end-to-end operation of the system.
+
+For the implementation of these tests, one used the pytest framework. Since we also have to test for several environments, the \href{https://tox.readthedocs.io/en/latest/}{tox} package was used to create virtual environments with different versions of Python.
+
+To ensure that the tests would be in full operation whenever there were changes in the code, Continuous integration workflows were developed that run the tests for each contribution in the central repository. Currently, there are four hundred and twenty-six tests that are run for every source code change.
+
+\section{Documentation}
+A documentation was design in order to popularize the use of the project and reduce the barrier for future contributions. The documentation consists of a detailed explanation of all interface commands. Furthermore, there is a list of all the classes used in the project. Each section contains descriptions of the class parameters and what they do.
+
+As a way to bring the documentation closer to the code, it was decided to use python doc strings, so any change in the code makes it intuitive where the documentation should be changed. From there, the documentation was made with Sphinx and hosted using
+\href{https://readthedocs.org/}{Read the Docs} at the following address: https://minushalf.readthedocs.io/en/latest/.
+
+\section{Code distribution}
+In order to distribute the package to be installed, CI/CD pipelines were built to generate wheels that allow a simplified installation of the package. This is necessary because the package contains integrations between Fortran and Python, which may lead to compilation problems if installed from source. So the CI/CD Pipelines build wheels for different architectures and publish in a public and central repository.
+
+One chose Python's package manager (PyPI) as the repository for the package. Currently, the package can be found at https://pypi.org/project/minushalf/ \cite{Henrique2021} \cite{Henrique2020}. It has more than eighty-six thousand downloads.
