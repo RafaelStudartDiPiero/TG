@@ -1,15 +1,15 @@
 # Fdb version 4
-["bibtex tese"] 1717551298.14966 "tese.aux" "tese.bbl" "tese" 1717551331.38232 2
+["bibtex tese"] 1717581169.94379 "tese.aux" "tese.bbl" "tese" 1717582810.57643 0
   "./Referencias/referencias.bib" 1717550823.95296 5109 804b6d2295146101a1a9f5d658aa35a1 ""
-  "./abnt-alf.bst" 1717553486 60187 6b5ced47da502ffbdfe91278e2208064 ""
+  "./abnt-alf.bst" 1717552478.73529 60186 91c7419be9dbc9677d22fb4256f73bd6 ""
   "./abnt-options.bib" 1717553486 5396 4eb260dac60f150ae608d45252853090 ""
-  "tese.aux" 1717551330.99808 1235 881833f1784c91c90b3cd25f2329a297 "pdflatex"
+  "tese.aux" 1717582810.18057 3056 e51efc57aae4c63bd9d8b9475a5fa302 "pdflatex"
   (generated)
   "tese.bbl"
   "tese.blg"
   (rewritten before read)
-["pdflatex"] 1717551329.93216 "/Users/rafaeldipiero/Documents/ITA/TG/tese.tex" "tese.pdf" "tese" 1717551331.38246 0
-  "/Users/rafaeldipiero/Documents/ITA/TG/tese.tex" 1717551328.04638 6701 b7033b964440102c1840320ae39afefa ""
+["pdflatex"] 1717582809.01736 "/Users/rafaeldipiero/Documents/ITA/TG/tese.tex" "tese.pdf" "tese" 1717582810.57659 0
+  "/Users/rafaeldipiero/Documents/ITA/TG/tese.tex" 1717582808.81013 6424 de7a0b95144b43650cf35efc3e98c427 ""
   "/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2024/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2024/texmf-dist/fonts/tfm/jknappen/ec/ecrm1200.tfm" 1136768653 3584 f80ddd985bd00e29e9a6047ebd9d4781 ""
@@ -271,10 +271,12 @@
   "Cap0/agradecimentos.tex" 1717553486 13 955e808e5d312c393d6e327d3480c6e9 ""
   "Cap0/ita_logo.jpg" 1717553486 333607 49db3afc319945dd2941006053c71e1d ""
   "Cap0/listaabreviaturas.tex" 1717553486 563 cec004c3f0ccd05d11531a9eb9119f45 ""
-  "Cap0/listaalgoritmos.tex" 1717553486 563 cec004c3f0ccd05d11531a9eb9119f45 ""
+  "Cap0/listaalgoritmos.tex" 1717551867.86057 72 82c50c521e3f4b5080dbf2104b148f6d ""
   "Cap0/resumo.tex" 1717551078.87012 5 8e6f6f815b50f474cf0dc22d4f400725 ""
-  "Cap1/cap1.tex" 1717551266.07519 0 d41d8cd98f00b204e9800998ecf8427e ""
-  "Cap5/cap5.tex" 1717551294.71293 0 d41d8cd98f00b204e9800998ecf8427e ""
+  "Cap1/cap1.tex" 1717554590.40017 223 3c54a9351c46ece89d808cd323f30859 ""
+  "Cap2/cap2.tex" 1717551276.86661 0 d41d8cd98f00b204e9800998ecf8427e ""
+  "Cap3/cap3.tex" 1717581168.11313 318 d0a058c2c15e1ec47b750d86f20526d9 ""
+  "Cap4/cap4.tex" 1717582274.27339 13 955e808e5d312c393d6e327d3480c6e9 ""
   "abntcite.sty" 1717553486 40781 62a6e4931c1adfc1e48dda8115884c6c ""
   "abntex-abrev-pt_BR.def" 1717553486 2068 71def3d1e2dffa14030c89bea9c6f3bb ""
   "abntex-abrev.sty" 1717553486 2385 43dac56dc9a3205f911ce661d5e27e95 ""
@@ -285,13 +287,13 @@
   "makeglo.sty" 1717553486 3307 a9cbaa9a6aa9e4313d3f8790ad4cadf3 ""
   "nbr10520-2002.def" 1717553486 748 b3a64e6861d8e6f4d5a027668b61b6da ""
   "nbr10522-1988.def" 1717553486 2033 2640f31db66d54c88372a64ed1ddf7cb ""
-  "tese.aux" 1717551330.99808 1235 881833f1784c91c90b3cd25f2329a297 "pdflatex"
-  "tese.bbl" 1717551298.25046 228 734fa92002fe13e3f67a1bb32b4f5d97 "bibtex tese"
-  "tese.brf" 1717551330.97849 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "tese.lof" 1717551331.0001 70 d043e2cefe227276a1e443919a6072d0 "pdflatex"
-  "tese.out" 1717551330.99873 2202 d8e4188ead94da68012acacf5a826c9a "pdflatex"
-  "tese.tex" 1717551328.04638 6701 b7033b964440102c1840320ae39afefa ""
-  "tese.toc" 1717551331.00017 235 e2fb77628f4b51f6b8e35bde72843555 "pdflatex"
+  "tese.aux" 1717582810.18057 3056 e51efc57aae4c63bd9d8b9475a5fa302 "pdflatex"
+  "tese.bbl" 1717581170.05325 228 734fa92002fe13e3f67a1bb32b4f5d97 "bibtex tese"
+  "tese.brf" 1717582810.1636 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "tese.lof" 1717582810.18295 110 a51cfa89ef63f1755f6c9a71705a96e5 "pdflatex"
+  "tese.out" 1717582810.18144 3974 57887c41060da52df672992c672c1bf1 "pdflatex"
+  "tese.tex" 1717582808.81013 6424 de7a0b95144b43650cf35efc3e98c427 ""
+  "tese.toc" 1717582810.18306 1028 09f2b159dc86a119b73ccdb21a12c431 "pdflatex"
   "tg.def" 1717553486 332 5fa07797192cac587d75a968b4acfc6d ""
   (generated)
   "tese.aux"
