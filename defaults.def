@@ -1,5 +1,5 @@
 %%% by
-%%%   Fábio Fagundes Silveira   -  ffs [at] ita [dot] br
+%%%   Fï¿½bio Fagundes Silveira   -  ffs [at] ita [dot] br
 %%%   $Id: defaults.def 2 2006-01-18 11:55:58Z ffs $
 %%%
     \renewcommand{\@title}{\@titlebabel}                     %{T\'{i}tulo do Trabalho}
@@ -7,7 +7,7 @@
     \renewcommand{\@author}{\@authorbabel}                   %{Nome do Autor}
 		\newcommand{\@authorword}{\@authorwordbabel}					   %{Autor}
     \newcommand{\itaauthoraddress}{\itaauthoraddressbabel}   %{Rua Tal, xxx}
-		\newcommand{\cdunumber}{\cdunumberbabel}								 %{Número de Classificação decimal universal para biblioteca}
+		\newcommand{\cdunumber}{\cdunumberbabel}								 %{Nï¿½mero de Classificaï¿½ï¿½o decimal universal para biblioteca}
 
     \newcommand{\authorgendermf}{\authorgendermfbabel}          % masc ou fem
     \newcommand{\advisorgendermf}{\advisorgendermfbabel}        % masc ou fem
@@ -23,20 +23,20 @@
     \newcommand{\itacoadvisortitle}{\itacoadvisortitlebabel} %{Prof.~Dr.}
     \newcommand{\itacoadvisorword}{\itacoadvisorwordbabel}   %{Coorientador}
 		
-    \newcommand{\itabossname}{\itabossnamebabel}             %{Nome do Chefe da Divisão de Pós-graduação}
+    \newcommand{\itabossname}{\itabossnamebabel}             %{Nome do Chefe da Divisï¿½o de Pï¿½s-graduaï¿½ï¿½o}
     \newcommand{\itabosstitle}{\itabosstitle}                %{Prof.~Dr.}
-    \newcommand{\itabossword}{\itabosswordbabel}             %{Chefe da Divisão de Pós-graduação}
+    \newcommand{\itabossword}{\itabosswordbabel}             %{Chefe da Divisï¿½o de Pï¿½s-graduaï¿½ï¿½o}
   
-    \newcommand{\itabosscoursename}{\itabosscoursenamebabel}             %{Nome do Nome do coordenador do respectivo curso de graduação}
+    \newcommand{\itabosscoursename}{\itabosscoursenamebabel}             %{Nome do Nome do coordenador do respectivo curso de graduaï¿½ï¿½o}
     \newcommand{\itabosscoursetitle}{\itabosscoursetitle}                %{Prof.~Dr.}
-    \newcommand{\itabosscourseword}{\itabosscoursewordbabel}             %{Coordenador do respectivo curso de graduação}
+    \newcommand{\itabosscourseword}{\itabosscoursewordbabel}             %{Coordenador do respectivo curso de graduaï¿½ï¿½o}
 
 
     \newcommand{\itaworklevel}{\itaworklevelbabel}           %{(Documento)}
     \newcommand{\itaworkcourse}{\itaworkcoursebabel}         %{(Curso)}
     \newcommand{\itaworkdept}{\itaworkdeptbabel}             %{(Divisao)}
-    \newcommand{\itaworkarea}{\itaworkareababel}             %{(Área)}
-    \newcommand{\itaauthortitle}{\itaauthortitlebabel}       %{(Título)}
+    \newcommand{\itaworkarea}{\itaworkareababel}             %{(ï¿½rea)}
+    \newcommand{\itaauthortitle}{\itaauthortitlebabel}       %{(Tï¿½tulo)}
 
     \newcommand{\itaoptionlevel}{}                           % msc, dsc, quali
     \newcommand{\itaoptioncourse}{}                          
@@ -45,8 +45,8 @@
 
     \newcommand{\itaspacing}{}
 		
-		\newcommand{\finalpaper}{\finalpaperbabel}							 % Trabalho de Graduação
-		\newcommand{\itatglevel}{\itatglevelbabel}							 % Trabalho de Conclusão de Curso (Graduação)
+		\newcommand{\finalpaper}{\finalpaperbabel}							 % Trabalho de Graduaï¿½ï¿½o
+		\newcommand{\itatglevel}{\itatglevelbabel}							 % Trabalho de Conclusï¿½o de Curso (Graduaï¿½ï¿½o)
 		
 		\newcommand{\courseof}{\courseofbabel}									 % Course of
 		

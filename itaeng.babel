@@ -4,7 +4,7 @@
 %%%
 
 %--------------------------------------------------------
-% Graduação (TG)
+% Graduaï¿½ï¿½o (TG)
 %--------------------------------------------------------
 \gdef\itaoptioncoursetgbabel{Undergraduation}
 \gdef\itaworkleveltgbabel{Work}
@@ -50,11 +50,11 @@
 \gdef\itacountrybabel{Brazil}
 
 %--------------------------------------------------------
-%Trabalho de Graduação (TG)
+%Trabalho de Graduaï¿½ï¿½o (TG)
 %--------------------------------------------------------
 \gdef\itatitletexttgbabel{\nh{Work presented to the Instituto Tecnol\'{o}gico de Aeron\'{a}utica, in partial fulfillment of the requirements for the conclusion of the course in \itaworkcourse.}\vspace{12pt}.}
 	  
-\gdef\itathesisapprovedmemberstgbabel{This publication was accepted like Final Work of Undergraduation Study}
+\gdef\itathesisapprovedmemberstgbabel{Bachelorâ€™s Thesis approved in its final version by the signatories below:}
 																			% outra possibilidade: Final Work approved in its final version by signatories below:
 \gdef\itacountrytgbabel{Brazil}
 
@@ -113,17 +113,17 @@
 \gdef\itabosswordbabel{Dean for Graduate Education and Research}   
                                                                    %{Pro-Reitor de Pos-Graduacao e Pesquisa}
 
-\gdef\itabosscoursenamebabel{Name of the Course Coordinator of \itaworkcourse} %{Nome do coordenador do respectivo curso de graduação}
+\gdef\itabosscoursenamebabel{Name of the Course Coordinator of \itaworkcourse} %{Nome do coordenador do respectivo curso de graduaï¿½ï¿½o}
 \gdef\itabosscoursetitle{Prof.~Dr.}                                          %{Prof.~Dr.}
-\gdef\itabosscoursewordbabel{Course Coordinator of \itaworkcourse}         %{Coordenador do respectivo curso de graduação}
+\gdef\itabosscoursewordbabel{Course Coordinator of \itaworkcourse}         %{Coordenador do respectivo curso de graduaï¿½ï¿½o}
 
 \gdef\itaworklevelbabel{(Document)}                                %{(Documento)}
 \gdef\itaworkcoursebabel{(Course)}                                 %{(Curso)}
 \gdef\itaworkareababel{(Area)}                                     %{(Area)}
-\gdef\itaauthortitlebabel{(Title)}                                 %{(Título)}
+\gdef\itaauthortitlebabel{(Title)}                                 %{(Tï¿½tulo)}
 \gdef\courseofbabel{Course of}																		 %{Course of}
 
-\gdef\cdunumberbabel{CDU}																					 %Número de Registro para organização nas prateleiras da biblioteca..} 
+\gdef\cdunumberbabel{CDU}																					 %Nï¿½mero de Registro para organizaï¿½ï¿½o nas prateleiras da biblioteca..} 
 
 \gdef\authorgendermfbabel{mf}                              					 % masc ou fem
 \gdef\advisorgendermfbabel{mf}                            					 % masc ou fem
@@ -131,8 +131,8 @@
 \gdef\bossgendermfbabel{mf}                               					 % masc ou fem
 \gdef\bosscoursegendermfbabel{mf}                         					 % masc ou fem
 
-\gdef\finalpaperbabel{Final Paper}																 % Trabalho de Graduação
-\gdef\itatglevelbabel{Final paper (Undergraduation study)}				 % Final paper (Undergraduation study)
+\gdef\finalpaperbabel{Bachelor's Thesis}																 % Trabalho de Graduaï¿½ï¿½o
+\gdef\itatglevelbabel{Bachelor's Thesis (Undergraduation study)}				 % Bachelor's Thesis
 
 %--------------------------------------------------------
 %Pagina CIP
@@ -146,7 +146,7 @@
 			\vspace{\baselineskip}
 			\@cipkw\ I. Instituto Tecnol\'{o}gico de Aeron\'{a}utica. II.~Title.\par}
 
-\gdef\itaciptgdata1babel {Final paper (Undergraduation study) -- Course of \itaworkcourse -- Instituto Tecnol\'{o}gico de Aeron\'{a}utica,
+\gdef\itaciptgdata1babel {Bachelor's Thesis -- Course of \itaworkcourse -- Instituto Tecnol\'{o}gico de Aeron\'{a}utica,
 	\@publyear. Advisor: \itaadvisortitle\ \itaadvisorname. \@ifundefined{@coadvisor}{}{Co-advisor:
 	\@itacoadvisortitle\ \@itacoadvisorname.}\par
 	\vspace{\baselineskip}
@@ -156,7 +156,7 @@
 
 \gdef\itacip2babel {\itaworklevel\ of \itaauthortitle\ -- Instituto Tecnol\'{o}gico de Aeron\'{a}utica, S\~{a}o Jos\'{e} dos Campos.}
 
-\gdef\itaciptg2babel {Final paper (Undergraduation study) -- Instituto Tecnol\'{o}gico de Aeron\'{a}utica, 
+\gdef\itaciptg2babel {Bachelor's Thesis -- Instituto Tecnol\'{o}gico de Aeron\'{a}utica, 
         S\~{a}o Jos\'{e} dos Campos.}
 
 \gdef\itacedirnamebabel{CESSION OF RIGHTS}
