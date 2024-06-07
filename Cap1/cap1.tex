@@ -1,11 +1,124 @@
 \section{Motivation}
 \label{section_intro_motivation}
 
+Graph theory is a fundamental field of mathematics with significant relevance in
+computer science due to its ability to model relationships between objects.
+One of the key challenges in computer science is graph traversal and exploration, which involves systematically navigating through the nodes of a graph
+with a specific purpose. This topic has practical applications across diverse fields, such as network routing, robotics, procedural generation, electronics design, and more.
+
+When considering the complexities and time constraints imposed by real-world environments,
+graph exploration must be expanded to consider multi-agent systems. In such systems, multiple
+autonomous agents collaborate to explore graphs, aiming to distribute tasks to achieve optimal efficiency. However, one of the challenges in 
+these type of system is communication, as strategies need to balance the trade-off between the amount of information shared among agents
+and the cost of sharing it.
+
+Various versions of this problem have been explored in research. 
+One such approach, discussed by \citen{Kivelevitch2010}, proposed a generalization of Tarry's Algorithm with significant emphasis on minimizing data transfer.
+Nevertheless, this solution is limited to mazes and does not extend to general graphs.
+
+Despite the previously mentioned research, the concept of zero-communication exploration has not been
+concretely established in the literature. We believe this gap is significant, as practical situations might involve
+scenarios where communication is limited or impossible due to bandwidth limitations or energy consumption, such as deep-sea exploration,
+search with energy-limited agents, or high-efficiency state space search. 
+
+This work aims to address this gap by presenting a continuation
+and expansion of a method initially developed for perfect maze exploration \cite{Naeem2021} as discussed by \citen{Arthur2023}.
+Building upon this groundwork, the research extends the method to accommodate diverse graph structures by removing dependencies on specific projects. 
+General improvements, such as structuring the exploration into well-defined and extensible classes
+and incorporating built-in testing, strive to make the development process more versatile and robust, paving the way for broader applications in multi-agent systems.
+
+
 \section{Objective}
 \label{section_intro_objective}
 
-\section{Related works}
-\label{section_intro_relatedwork}
+This study aims to propose a viable algorithm for graph exploration by multi-agents, specifically targeting the identification of a goal node.
+A previous paper by \citen{Arthur2023} discussed an approach for perfect maze exploration, which can be modeled as a tree, a connected acyclic undirected graph.
+Expanding the proposed algorithm to connected cyclic graphs could allow further discussion and contribute to research in real-world applications 
+such as robotics, as well as in the theoretical analysis of parallelism and communication between agents.
 
 \section{Definitions}
 \label{section_intro_definitions}
+
+This section aims to define key concepts in graph theory and
+multi-agent exploration that are essential for understanding the context 
+and methodology of our research, ensuring clarity and consistency in the subsequent discussions.
+
+\subsection{Graph}
+\label{section_definitions_graph}
+
+Graphs are structures in mathematics and computer science used to represent
+relationships between pairs of objects. According to \citen{Manber1989}, a graph
+$G=(V,E)$ is defined as a set $V$ of vertices (or nodes) and a set $E$ of edges,
+that connect pairs of vertices. 
+
+\subsubsection{Common Nomenclature}
+
+In graph theory, the basic terminology includes the following components:
+
+\begin{itemize}
+    \item Vertex (Node): The fundamental unit of a graph, representing an object or a point.
+    \item Edge: A connection between a pair of vertices, representing a relationship between them.
+    \item Adjacency: Two vertices $v$ and $w$ of a graph $G$ are adjacent if there is an edge $vw$ joining them, and the vertices $v$ and $w$ are then incident with such an edge. \cite{West2018}
+    \item Degree: Degree of a vertex $v$ of $G$ is the number of edges incident with $v$. \cite{West2018}
+    \item Path: A path in a graph $G$, as defined by \citen{West2018}, is a finite sequence of edges of the form $v_0v_1$, $v_1v_2$, ... in which any two consecutive edges are adjacent, all edges are distinct and all vertices $v_0$, $v_1$, ..., $v_m$ are distinct (except, possibly, $v_0 = v_m$).
+    \item Cycle: A path where $v_0 = v_m$ and with at least one edge. \cite{West2018}
+\end{itemize}
+
+\subsubsection{Key Properties}
+
+A few key properties of graphs that interest us are:
+
+\begin{itemize}
+    \item Connectivity: A graph is connected if and only if there is a path between each pair of vertices. \cite{West2018}
+    \item Acyclicity: A graph is acyclic if it has no cycles. A tree is a special case of an acyclic connected graph.
+\end{itemize}
+
+\subsubsection{Traversal}
+
+Graph traversal is the process of visiting all the vertices in a graph in a systematic manner. Two fundamental algorithms for graph traversal are:
+
+\begin{itemize}
+    \item Breadth-first search (BFS): Expands the frontier between discovered and undiscovered vertices uniformly across the breadth of the frontier. \cite{Manber1989}
+    \item Depth-first search (DFS): Explores edges out of the most recently discovered vertex $v$ that still has unexplored edges leaving it. \cite{Manber1989}
+\end{itemize}
+
+\subsection{Agent}
+\label{section_definitions_agent}
+
+An agent in maze exploration, as defined by \citen{Kivelevitch2010}, 
+is an entity able to move within the maze in any direction as long as it does not encounter obstacles.
+
+In the context of graph exploration, this concept extends to an agent's ability to traverse
+edges between vertices within the graph structure. Each agent acts independently,
+making decisions based on its individual memory and the local information available at its current vertex and its adjacent edges.
+
+
+\subsection{Mixed Radix}
+\label{section_definitions_mixed_radix}
+
+A mixed radix system is a positional numerical system in which the numerical base for each digit
+varies. This allows for more flexible representation of numbers,
+accommodating various scales within the same numerical framework.
+
+One mathematical approach for representing mixed radix numbers can be found in \citen{Arndt2011},
+which establishes a comprehensive arithmetical method for manipulating them.  However,
+for the specific subset of real numbers within the interval [0, 1], a more specialized approach is utilized, as described by \citen{Arthur2023}.
+
+In this context, the mixed radix representation $A=[a_{0},a_{1},a_{2},...,a_{n-1}]$ 
+of a number $x$ with respect to a radix vector $M=[m_{0},m_{1},m_{2},...,m_{n-1}]$,
+where $x \in [0,1]$, is given by:
+
+\begin{equation}
+	x = \sum_{k=0}^{n-1} a_{k} \prod_{j=0}^{k} \frac{1}{m_j}
+\end{equation}
+where $0 \le a_{j} < m_{j}$. \cite{Arthur2023}
+
+For instance, if $x$ is represented by $2_{3}1_{2}1_{4}0_{3}1_{5}$, and considering that $a_{i}$ is on the left of $a_{i+1}$, $x$ might be transformed to the decimal base by the following steps:
+
+\begin{align}
+& x=2_{3}1_{2}1_{4}0_{3}1_{5}\\
+& A=[2,1,1,0,1]\\
+& M=[3,2,4,3,5]\\
+& n=5\\
+& x = \sum_{k=0}^{4} a_{k} \prod_{j=0}^{k} \frac{1}{m_j} \approx 0.8777778
+\end{align}
