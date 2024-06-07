@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.6.4)  7 JUN 2024 12:33
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.6.4)  7 JUN 2024 12:38
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
@@ -1506,9 +1506,7 @@ Package hyperref Info: Anchor `page.vii' on input line 146.
 ]
 Package hyperref Info: Anchor `chapter*.3' on input line 146.
 Package hyperref Info: Anchor `abstract.0' on input line 146.
- (./Cap0/abstract.tex) (./Cap0/listaalgoritmos.tex
-Package hyperref Info: Anchor `table.0.1' on input line 3.
-)
+ (./Cap0/abstract.tex)
 
 Package hyperref Info: Anchor `page.viii' on input line 161.
 [8
@@ -1521,7 +1519,7 @@ Package hyperref Info: Anchor `listaabreviaturas.0' on input line 161.
 \openout8 = `tese.lof'.
 
  (./Cap0/listaabreviaturas.tex
-Package hyperref Info: Anchor `table.0.2' on input line 5.
+Package hyperref Info: Anchor `table.0.1' on input line 5.
 )
 
 Package hyperref Info: Anchor `page.ix' on input line 165.
@@ -1535,7 +1533,7 @@ Package hyperref Info: Anchor `listasimbolos.0' on input line 165.
 \openout9 = `tese.lof'.
 
  (./Cap0/listasimbolos.tex
-Package hyperref Info: Anchor `table.0.3' on input line 7.
+Package hyperref Info: Anchor `table.0.2' on input line 7.
 )
 
 Package hyperref Info: Anchor `page.x' on input line 169.
@@ -1862,18 +1860,18 @@ Package rerunfilecheck Info: File `tese.brf' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 32867 strings out of 473600
- 619336 string characters out of 5728703
+ 32857 strings out of 473600
+ 619094 string characters out of 5728703
  1936890 words of memory out of 5000000
- 54906 multiletter control sequences out of 15000+600000
+ 54900 multiletter control sequences out of 15000+600000
  609270 words of font info for 137 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  105i,11n,107p,649b,708s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmb10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb>
-Output written on tese.pdf (21 pages, 574438 bytes).
+Output written on tese.pdf (21 pages, 574097 bytes).
 PDF statistics:
- 425 PDF objects out of 1000 (max. 8388607)
- 363 compressed objects within 4 object streams
- 80 named destinations out of 1000 (max. 500000)
+ 424 PDF objects out of 1000 (max. 8388607)
+ 362 compressed objects within 4 object streams
+ 79 named destinations out of 1000 (max. 500000)
  298 words of extra memory for PDF output out of 10000 (max. 10000000)
 

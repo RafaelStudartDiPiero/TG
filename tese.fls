@@ -572,11 +572,6 @@ INPUT ./Cap0/abstract.tex
 INPUT ./Cap0/abstract.tex
 INPUT ./Cap0/abstract.tex
 INPUT Cap0/abstract.tex
-INPUT ./Cap0/listaalgoritmos.tex
-INPUT ./Cap0/listaalgoritmos.tex
-INPUT ./Cap0/listaalgoritmos.tex
-INPUT ./Cap0/listaalgoritmos.tex
-INPUT Cap0/listaalgoritmos.tex
 INPUT ./tese.lof
 INPUT ./tese.lof
 INPUT tese.lof
