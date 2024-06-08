@@ -1,15 +1,15 @@
 # Fdb version 4
-["bibtex tese"] 1717774719.24674 "tese.aux" "tese.bbl" "tese" 1717774721.01391 0
+["bibtex tese"] 1717789346.57612 "tese.aux" "tese.bbl" "tese" 1717845776.75015 0
   "./Referencias/referencias.bib" 1717758974.49597 1490 9d2981eb6559ddaeddd50b5f9c8d4302 ""
   "./abnt-alf.bst" 1717552478.73529 60186 91c7419be9dbc9677d22fb4256f73bd6 ""
   "./abnt-options.bib" 1717553486 5396 4eb260dac60f150ae608d45252853090 ""
-  "tese.aux" 1717774720.56551 5998 1a0077bff71986bde3a6f7fa3de6c596 "pdflatex"
+  "tese.aux" 1717845776.37077 6162 79f1a9ad39ac2be725b3da6cd9c2a09d "pdflatex"
   (generated)
   "tese.bbl"
   "tese.blg"
   (rewritten before read)
-["pdflatex"] 1717774719.34742 "/Users/rafaeldipiero/Documents/ITA/TG/tese.tex" "tese.pdf" "tese" 1717774721.01408 0
-  "/Users/rafaeldipiero/Documents/ITA/TG/tese.tex" 1717774717.35496 6396 8f13fa35ad7d757e655d57e1c660a7a2 ""
+["pdflatex"] 1717845775.39041 "/Users/rafaeldipiero/Documents/ITA/TG/tese.tex" "tese.pdf" "tese" 1717845776.75033 0
+  "/Users/rafaeldipiero/Documents/ITA/TG/tese.tex" 1717780647.16568 6396 8f13fa35ad7d757e655d57e1c660a7a2 ""
   "/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2024/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2024/texmf-dist/fonts/tfm/jknappen/ec/ecrm1200.tfm" 1136768653 3584 f80ddd985bd00e29e9a6047ebd9d4781 ""
@@ -284,7 +284,7 @@
   "Cap0/listaabreviaturas.tex" 1717755414.19283 124 84d7d172defeaf415c4844c60b4c96cb ""
   "Cap0/listasimbolos.tex" 1717756261.11175 85 53cd71908cff57a9a2eaa2d8e3fef6ea ""
   "Cap0/resumo.tex" 1717551078.87012 5 8e6f6f815b50f474cf0dc22d4f400725 ""
-  "Cap1/cap1.tex" 1717774423.70811 7398 81ba5eabb1d932241e0a997f64df9b9c ""
+  "Cap1/cap1.tex" 1717845775.21187 9365 fa5270db51a850d049e28224d0debf5a ""
   "Cap2/cap2.tex" 1717699084.6024 351 4927577f496f9d35f224e5ff7aad0c32 ""
   "Cap3/cap3.tex" 1717581168.11313 318 d0a058c2c15e1ec47b750d86f20526d9 ""
   "Cap4/cap4.tex" 1717634184.16398 0 d41d8cd98f00b204e9800998ecf8427e ""
@@ -298,13 +298,13 @@
   "makeglo.sty" 1717553486 3307 a9cbaa9a6aa9e4313d3f8790ad4cadf3 ""
   "nbr10520-2002.def" 1717553486 748 b3a64e6861d8e6f4d5a027668b61b6da ""
   "nbr10522-1988.def" 1717553486 2033 2640f31db66d54c88372a64ed1ddf7cb ""
-  "tese.aux" 1717774720.56551 5998 1a0077bff71986bde3a6f7fa3de6c596 "pdflatex"
-  "tese.bbl" 1717774719.34268 1472 e4ab9a0d367e21dea471804d495c8196 "bibtex tese"
-  "tese.brf" 1717774720.54671 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "tese.lof" 1717774720.56841 110 a51cfa89ef63f1755f6c9a71705a96e5 "pdflatex"
-  "tese.out" 1717774720.56684 5175 0cf075ad896a3409ab77341804d3e948 "pdflatex"
-  "tese.tex" 1717774717.35496 6396 8f13fa35ad7d757e655d57e1c660a7a2 ""
-  "tese.toc" 1717774720.56848 1944 b9fdd25aa2e58880da272278eee704fb "pdflatex"
+  "tese.aux" 1717845776.37077 6162 79f1a9ad39ac2be725b3da6cd9c2a09d "pdflatex"
+  "tese.bbl" 1717789346.67402 1472 e4ab9a0d367e21dea471804d495c8196 "bibtex tese"
+  "tese.brf" 1717845776.35421 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "tese.lof" 1717845776.37302 110 a51cfa89ef63f1755f6c9a71705a96e5 "pdflatex"
+  "tese.out" 1717845776.37173 5175 0cf075ad896a3409ab77341804d3e948 "pdflatex"
+  "tese.tex" 1717780647.16568 6396 8f13fa35ad7d757e655d57e1c660a7a2 ""
+  "tese.toc" 1717845776.37305 2063 7069e34b2984b8fc2b3428813561fed4 "pdflatex"
   "tg.def" 1717553486 332 5fa07797192cac587d75a968b4acfc6d ""
   (generated)
   "tese.aux"

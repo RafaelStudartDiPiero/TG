@@ -8,9 +8,10 @@ with a specific purpose. This topic has practical applications across diverse fi
 
 When considering the complexities and time constraints imposed by real-world environments,
 graph exploration must be expanded to consider multi-agent systems. In such systems, multiple
-autonomous agents collaborate to explore graphs, aiming to distribute tasks to achieve optimal efficiency. However, one of the challenges in 
-these type of system is communication, as strategies need to balance the trade-off between the amount of information shared among agents
-and the cost of sharing it.
+autonomous agents collaborate to explore graphs, aiming to distribute tasks to achieve optimal efficiency. However, communication strategies
+on these systems are challenging, as they need to balance the trade-off between the amount of information shared among agents
+versus the quality of the solution. In other words, while communication can allow
+agents to speed up their exploration, it may cost time and/or energy.
 
 Various versions of this problem have been explored in research. 
 One such approach, discussed by \citen{Kivelevitch2010}, proposed a generalization of Tarry's Algorithm with significant emphasis on minimizing data transfer.
@@ -70,7 +71,7 @@ A few key properties of graphs that interest us are:
 
 \begin{itemize}
     \item Connectivity: A graph is connected if and only if there is a path between each pair of vertices. \cite{West2018}
-    \item Acyclicity: A graph is acyclic if it has no cycles. A tree is a special case of an acyclic connected graph.
+    \item Acyclicity: A graph is acyclic if it has no cycles. A tree is an acyclic connected graph.
 \end{itemize}
 
 \subsubsection{Traversal}
@@ -80,6 +81,8 @@ Graph traversal is the process of visiting all the vertices in a graph in a syst
 \begin{itemize}
     \item Breadth-first search (BFS): Expands the frontier between discovered and undiscovered vertices uniformly across the breadth of the frontier. \cite{Manber1989}
     \item Depth-first search (DFS): Explores edges out of the most recently discovered vertex $v$ that still has unexplored edges leaving it. \cite{Manber1989}
+    \item Tarry's Algorithm: Tarry's Algorithm is used traverse the entire maze, or graph, in a depth first fashion, where each edge is travelled twice, and the agent finishes the motion at the same initial vertex it started from.\cite{Kivelevitch2010} This algorithm is described in the context of a physical maze, where the agent must physically move between adjacent nodes.
+    It was first described over botanical mazes built as amusements for the XIX century aristocracy.
 \end{itemize}
 
 \subsection{Agent}
@@ -111,7 +114,8 @@ where $x \in [0,1]$, is given by:
 \begin{equation}
 	x = \sum_{k=0}^{n-1} a_{k} \prod_{j=0}^{k} \frac{1}{m_j}
 \end{equation}
-where $0 \le a_{j} < m_{j}$. \cite{Arthur2023}
+where $a_j$ are non-negative integers, $m_j$ are integers such that $m_j \geq 2$, and $0 \leq a_j \leq m_j$. \cite{Arthur2023}
+
 
 For instance, if $x$ is represented by $2_{3}1_{2}1_{4}0_{3}1_{5}$, and considering that $a_{i}$ is on the left of $a_{i+1}$, $x$ might be transformed to the decimal base by the following steps:
 
@@ -121,4 +125,32 @@ For instance, if $x$ is represented by $2_{3}1_{2}1_{4}0_{3}1_{5}$, and consider
 & M=[3,2,4,3,5]\\
 & n=5\\
 & x = \sum_{k=0}^{4} a_{k} \prod_{j=0}^{k} \frac{1}{m_j} \approx 0.8777778
+\end{align}
+
+\subsubsection{Extending Mixed Radix with Unary Digits}
+
+In our study, we extended the mixed radix system to include unary digits,
+which are used to represent steps in a sequence where no meaningful decisions are made.
+These unary digits do not contribute to the numerical value and can be omitted in the conversion to standard numerical forms.
+
+Within our framework, the mixed radix representation $A=[a_{0},a_{1},a_{2},...,a_{n-1}]$ 
+of a number $x$ with respect to a radix vector $M=[m_{0},m_{1},m_{2},...,m_{n-1}]$,
+where $x \in [0,1]$, is given by:
+
+Let  $U = \{ k \ |\ m_k \neq 1 \} $ be the set of indices where the base \( m_k \) is not unary.
+
+\begin{equation}
+	x = \sum_{k \in U} u_{k} \prod_{j=0}^{k} \frac{1}{m_j}
+\end{equation}
+where $a_k$ are non-negative integers, $m_j$ are integers such that $m_j \geq 1$, and $0 \leq a_j \leq m_j$.
+
+Consider the mixed radix representation $x=2_{3}X_11_{2}X_1X_11_{4}0_{3}1_{5}$, where $X_1$ represents the unary digit and each $a_{i}$ is on the left of $a_{i+1}$. We can transform
+$x$ to the decimal base using the following steps:
+
+\begin{align}
+    & x=2_{3}X_11_{2}X_1X_11_{4}0_{3}1_{5}\\
+    & A=[2,X,1,X,X,1,0,1]\\
+    & M=[3,1,2,1,1,4,3,5]\\
+    & U=[0,2,5,6,7]\\
+    & x = \sum_{k \in U} a_{k} \prod_{j=0}^{k} \frac{1}{m_j} \approx 0.8777778
 \end{align}
