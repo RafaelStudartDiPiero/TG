@@ -1,18 +1,409 @@
+This section intends to discuss specific design choices that support
+our multi-agent search algorithm.
+Section \ref{section_method_modeling} introduces the models and classes developed to improve our algorithm.
+Section \ref{section_method_algorithm} describes the core concepts of our algorithm and provides pseudocode to guide its implementation.
+Section \ref{section_method_mixed_radix} presents a mixed radix numerical representation used for the agent's path and examples to demonstrate its functionality.
+Finally, \ref{section_method_alt_exploration_alg} details how we can extend our solution to allow different exploration algorithms.
 
 \section{Modeling}
 \label{section_method_modeling}
 
+In this section, we detail the modeling approach chosen to structure our problem,
+emphasizing the use of classes to achieve greater flexibility in our solution.
+The main classes include \textbf{Simulation},\textbf{Graph} and \textbf{Agent}, each of which will be defined in subsequent sections.
+Figure \ref{fig:class_diagram} presents a simplified class diagram that illustrates the overall structure of our model.
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Cap2/simplified_class_diagram.png}
+    \caption{Simplified Class Diagram of the Multi-Agent Maze Exploration Model}
+    \label{fig:class_diagram}
+\end{figure}
+
 \subsection{Simulation}
 \label{section_modeling_simulation}
+
+The \textbf{Simulation} class acts as a central controller in our multi-agent
+graph exploration problem. It is primarily responsible for managing shared information, including the graph structure.
+Additionally, it orchestrates the agents and the overall execution of the exploration process.
+
+In more detail, its responsibilities include:
+
+\begin{itemize}
+    \item Shared Information: Storing and managing all information that is common between agents.
+    \item Orchestration: Coordination agent activities and possible interactions during the exploration.
+    \item Visualization: Providing tools for tracking the progress and visualizing the result of the exploration.
+    \item Metrics: Collecting and analyzing performance metrics of the exploration.
+\end{itemize}
+
+As shown by Figure \ref{fig:class_diagram}, the core method of the \textbf{Simulation} is $simulate$ that is responsible for starting the exploration and managing each agent
+in parallel, until all agents have reached the goal or have no more moves available.
+The pseudocode in Algorithm \ref{alg:simulate} provides a breakdown of the function's steps and logic.
+
+\begin{algorithm}
+\caption{\textbf{Simulation} - simulate()}
+\label{alg:simulate}
+\begin{algorithmic}
+
+    \State /* \textit{Graph to be explored} */
+    \State graph $\gets$ $Graph()$
+
+    \State /* \textit{Agents} */
+    \State agents $\gets$ $[Agent(0), Agent(1), Agent(2), ...]$
+    \State
+
+    \State /* \textit{Agents that stopped already} */
+    \State agents\_stopped $\gets$ $[$ $ ]$
+    \ForAll{agent in agents}
+        \State append(agents\_stopped, FALSE)
+    \EndFor
+    \State
+
+    \State /* \textit{Exploration} */
+    \While{False in agents\_stopped}
+        \ForAll{agent in agents}
+            \State /* \textit{Moving each agent in parallel} */
+            \State agent.move\_one\_step()
+            \If{agent.status == "FINISHED" or agent.status == "STOPPED"}
+                \State agents\_stopped[agent.id] $\gets$ TRUE
+            \EndIf
+        \EndFor
+    \EndWhile
+    \State 
+    \State /* \textit{Calculing Metrics} */
+    \ForAll{agent in agents}
+        \State /* \textit{Simplified function for calculating metrics} */
+        \State /* \textit{How each specific metric is calculated is not relevant for our study} */
+        \State calculate\_metrics(agent)
+    \EndFor
+    \State
+    \State /* \textit{Simulation is complete} */
+    \State /* \textit{Showing graphical result} */
+    \State /* \textit{Simplified function for displaying} */
+    \State display\_demo\_exploration(agents)
+\end{algorithmic}
+\end{algorithm}
+    
 
 \subsection{Graph}
 \label{section_modeling_graph}
 
+The \textbf{Graph} class, as introduced in Section \ref{section_definitions_graph},
+serves as a basic representation of the graph structure for our multi-agent exploration.
+This class leverages existing libraries to efficiently manage nodes and edges,
+facilitating the agents' traversal of the graph.
+
+A key method within this class is $get\_neighbors$.
+This method returns a list of neighboring nodes in a specific order, aiding in the consistent traversal of the graph.
+
 \subsection{Agent}
 \label{section_modeling_agent}
 
-\section{Mixed Radix Representation}
-\label{section_method_mixed_radix}
+The \textbf{Agent} class represents an agent, as defined in Section \ref{section_definitions_agent} and illustrated in Figure \ref{fig:class_diagram}.
+
+An \textbf{Agent} is uniquely identified by its $id$ field and possesses the $status$ and $algorithm$ fields,
+which define its behavior during each step of the exploration process.
+
+Additionally, an \textbf{Agent} records its path using its own graph, defined by the $known\_graph$ field,
+and a mixed radix representation of it in the $visited\_path$ field. 
+
+Furthermore, the \textbf{Agent} possesses the $current\_node$ field, which stores its current position in the graph, and the $interval$ field, specific to our graph exploration algorithm, aiding in its traversal strategy.
+
+The core method of the \textbf{Agent} class is $move\_one\_step$,
+which is responsible for determining the agent's next action during the exploration,
+as demonstrated in Algorithm \ref{alg:simulate}.
+While the detailed logic of how the agent decides on its actions will be discussed in Section \ref{section_method_algorithm},
+we provide a pseudocode representation of this method in Algorithm \ref{alg:move_one_step}.
+
+
+\begin{algorithm}
+\caption{\textbf{Agent} - move\_one\_step()}
+\label{alg:move_one_step}
+\begin{algorithmic}
+    \Procedure{move\_one\_step}{self, graph}:
+    \State /* \textit{Checking if the agent has already stopped or finished} */
+    \If{self.status == "FINISHED" or self.status == "STOPPED"}
+        \State \textbf{return}
+    \EndIf
+    \State
+    \State /* \textit{Get current position} */
+    \State current\_position $\gets$ graph[self.current\_node]
+
+    \State
+    \State /* \textit{Taking new step} */
+    \State neighbors $\gets$ graph.get\_neighbors(current\_position)
+    \State /* \textit{Get only non visited neighbors} */
+    \State non\_visited\_neighbors $\gets$ $[$ $ ]$
+    \ForAll{neighbor in neighbors}
+        \If{self.known\_tree[neighbor].visited == FALSE}
+            \State append(non\_visited\_neighbors, neighbor)
+        \EndIf
+    \EndFor
+    \State /* \textit{This decision will be explained in Section \ref{section_method_algorithm}} */
+    \State next\_step $\gets$ self.define\_agent\_next\_step(non\_visited\_neighbors)
+    \State /* \textit{If invalid next\_step, just move back} */
+    \If{next\_step == "-1"}
+        \State self.step\_back()
+        \State \textbf{return}
+    \EndIf
+
+    \State
+    \State /* \textit{Updating after step} */
+    \State self.current\_node $\gets$ next\_step
+    \State self.known\_tree[self.current\_node].visited $\gets$ TRUE
+    \State
+    \State /* \textit{Checking if in goal} */
+    \If{current\_position.goal == TRUE}
+        \State self.status $\gets$ "FINISHED"
+        \State \textbf{return}
+    \EndIf
+
+    
+
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
 
 \section{Graph Exploration Algorithm}
-\label{section_method_}
+\label{section_method_algorithm}
+As mentioned in Section \ref{section_intro_objective},
+the aim of this study is to develop an effective algorithm for graph exploration using multiple agents without communication between them.
+A significant challenge in this context is avoiding the redundant exploration of nodes already visited by other agents,
+as it consumes resources without contributing new information to the overall exploration.
+
+To address this problem, we adopt the solution proposed by \citen{Arthur2023}, that consists on dividing the graph into distinct intervals,
+which are then split among the agents.
+This approach ensures that each agent explores a unique section of the graph,
+thereby minimizing overlap and maximizing efficiency.
+The intervals are determined based on the number of agents, ensuring a non-overlapping distribution of the graph's nodes.
+Figure \ref{fig:graph_dispersion} illustrates this concept, showing a graph with intervals assigned to different colored agents.
+
+\begin{figure}[ht!]
+    \centering
+    \begin{forest}
+        for tree={
+            circle,
+            draw,
+            minimum size=2em,
+        }
+        [root, label=above:{\textit{Starting point}}
+            [,fill=red!100
+                [,fill=red!100
+                    [,fill=red!100]
+                    [,fill=red!100]
+                ]
+                [,fill=red!100
+                    [,fill=red!100]
+                    [,fill=red!100]
+                ]
+                ]
+            [,fill=blue!100
+                [,fill=blue!100
+                    [,fill=blue!100]
+                    [,fill=blue!100]
+                ]
+                [,fill=blue!100
+                    [,fill=blue!100]
+                    [,fill=blue!100]
+                ]]
+            [,fill=yellow!100
+                [,fill=yellow!100
+                    [,fill=yellow!100]
+                    [,fill=yellow!100]
+                ]
+                [,fill=yellow!100
+                    [,fill=yellow!100]
+                    [,fill=yellow!100]
+                ]]]
+    \end{forest}
+    \caption{Three agents (Red, Blue, and Yellow) disperse from each other in a graph. Source: \citen{Arthur2023}}
+    \label{fig:graph_dispersion}
+\end{figure}
+
+Mathematically, this dispersion can be expressed by a set of equations.
+Assume there are $k$ agents, denoted as $a_1,a_2,a_3,...,a_k$.
+The distribution of intervals can be represented as shown in Equation \ref{eq:interval_dispersion},
+based on the approach proposed by \citen{Arthur2023}.
+
+\begin{align}
+    \label{eq:interval_dispersion}
+    d = 1/k \notag \\
+    a_{1} \textnormal{: } [0, d[ \notag\\
+    a_{2} \textnormal{: } [d, 2d[ \\
+    a_{3} \textnormal{: } [3d, 4d[ \notag\\
+    ...\notag\\
+    a_{k} \textnormal{: } [(k-1)d, 1] \notag
+\end{align}
+
+With the division of intervals explained, we now describe the step-by-step process of our algorithm for
+multi-agent graph exploration.
+This algorithm extends the work of \citen{Arthur2023},
+incorporating modifications to handle previously visited nodes and potential cycles.
+
+\begin{enumerate}
+    \item \textbf{Initialization}
+    \begin{itemize}
+        \item Each agent is assigned a unique identifier and a specific interval based on the Equation Set \ref{eq:interval_dispersion}.
+        \item Each agent begins with an empty tree representation of the graph, representing the knowledge it has accumulated during the exploration. Since each agent independently explores the graph, their trees may differ, reflecting the order in which nodes are visited.
+        \item All agents start at the same node, although the specific starting node is arbitrary.
+        \item The starting node is assigned the interval $[0,1]$ and is added to the agent's tree.
+    \end{itemize}
+    \item \textbf{Exploration Strategy}
+    \begin{itemize}
+        \item At each step, an agent examines the adjacent nodes that have not been previously visited by it. To maintain consistency in exploration, these nodes are sorted by their unique identifiers.
+        \item The agent dynamically calculates convergence intervals for each unvisited adjacent node. The calculation method is as follows:
+        \begin{itemize}
+
+            \item \textbf{Single Child}: If there is only one child node, it inherits the convergence interval of the current node.
+            
+            \item \textbf{Multiple Children}: If there are multiple children, the current node's convergence interval is uniformly divided among them.
+            
+        \end{itemize}
+        \item Each adjacent node is then added to the agent's tree along with the corresponding edge and its assigned interval. A node that has not been visited but already appears in the tree with a different interval can indicate two scenarios:
+            \begin{itemize}
+                \item \textbf{Backtracking}: If the node has been previously mapped by the same agent and the current edge exists in the tree, it indicates backtracking. In this case, the interval is not altered.
+                \item \textbf{Cycle Detection}: If the edge between the current node and the adjacent node does not exist in the tree, it suggests a potential cycle. The node is marked, and its interval is updated to reflect the new calculation.
+            \end{itemize}
+        \item The agent then chooses the first node whose convergence interval intersects with its own. If no such node exists or if all adjacent nodes have been visited, the current node is marked as explored, and the agent backtracks to the parent node.
+    \end{itemize}
+    \item \textbf{Completion Criteria}
+    \begin{itemize}
+        \item The agent continues the exploration process until it either finds the goal or fills its assigned interval. If the goal is not found within its interval, it must be within the interval of another agent.
+        \item After finishing its interval, the agent may stop or adopt an alternative strategy to accelerate the search. The default behavior implemented is to do a depth-first search (DFS), ignoring nodes already explored in the initial attempt.
+    \end{itemize}
+    
+\end{enumerate}
+
+
+The steps described in the \textbf{Initialization} topic are implemented in the initialization procedures of the \textbf{Simulation} and \textbf{Agent} classes. The pseudocode presented in Algorithm
+\ref{alg:define_agent_next_step} illustrates the $define\_agent\_next\_step$ method, which implements the step-by-step process described in the \textbf{Exploration Strategy} topic.
+
+\begin{algorithm}
+\caption{\textbf{Agent} - define\_agent\_next\_step()}
+\label{alg:define_agent_next_step}
+\begin{algorithmic}
+    \Procedure{define\_agent\_next\_step}{self, unvisited\_neighbors}:
+
+        \State /* \textit{Calculating the convergence intervals} */
+        \State /* \textit{This will be explained in Section \ref{section_method_mixed_radix}} */
+        \State neighbors\_weights $\gets$ self.get\_neighbors\_weight(unvisited\_neighbors)
+        \State
+        \State /* \textit{Checking for backtracking or cycle} */
+        \ForAll{neighbor $n_{j}$ in unvisited\_neighbors}
+            \If{self.known\_tree[$n_{j}$].convergence\_interval}
+                \If{self.current\_node in self.known\_tree[$n_{j}$].get\_edges()}
+                    \State /* \textit{Backtrack} */
+                    \State neighbors\_weights[$j$] $\gets$ self.known\_tree[$n_{j}$].convergence\_interval
+                \Else
+                    \State /* \textit{Cycle} */
+                    \State /* \textit{The agent removes the previous node from it's tree} 
+                    \State /* \textit{so it doesn't cause a cycle} */
+                    \State self.mark\_cycle($n_{j}$)
+                \EndIf
+            \EndIf
+        \EndFor
+        \State
+        \State /* \textit{Adding neighbors to tree} */
+        \State self.add\_neighbors\_to\_tree(unvisited\_neighbors, neighbors\_weights)
+     \algstore{alg1}
+\end{algorithmic}
+\end{algorithm}
+\begin{algorithm}
+\ContinuedFloat
+\caption{\textbf{Agent} - define\_agent\_next\_step()}
+\begin{algorithmic}
+    \algrestore{alg1}
+        \State
+        \State /* \textit{Checking for intersecting intervals} */
+        \ForAll{neighbor $n_{j}$ in unvisited\_neighbors}
+            \State max\_neighbor $\gets$ neighbors\_weights[$n_{j}$][1]
+            \State min\_neighbor $\gets$ neighbors\_weights[$n_{j}$][0]
+            \State max\_agent $\gets$ self.interval[1]
+            \State min\_agent $\gets$ self.interval[0]
+            \State
+            \If{max\_agent < min\_node}
+                \State /* \textit{If the node's interval is on the right of the agent's interval, surely the}
+                \State \textit{agent has finished its interval. Since the order of the nodes are well defined,}
+                \State \textit{and in increasing order of intervals, the following condition improve the}
+                \State \textit{algorithm's performance. It is optional} */
+                \State finished\_interval $\gets$ TRUE
+                \State \textbf{break}
+            \Else{ min\_agent < max\_neighbor \textbf{and} max\_agent > min\_neighbor}
+                \State /* \textit{Found intersecting intervals} */
+                \State \textbf{return} $n_{j}$
+            \EndIf
+        \EndFor
+        \State
+        \State /* \textit{If got here, didn't find any intersecting intervals } */
+        \State /* \textit{If back on root, the agent filled its interval } */
+        \If{self.current\_node == self.starting\_node}
+            \State self.filled\_interval $\gets$ TRUE
+        \EndIf
+        \State
+        \State /* \textit{Just step back if interval isn't filled} */
+        \If{self.filled\_interval == FALSE}
+            \State \textbf{return} "-1"
+        \EndIf
+        \State
+        \State /* \textit{If interval is filled, change strategies} */
+        \State self.status $\gets$ "DFS\_SEARCH"
+        \State \textbf{return}
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\section{Mixed Radix Path Representation}
+\label{section_method_mixed_radix}
+
+This section details how the mixed radix representation described in Section \ref{section_definitions_unary_mixed_radix}
+is used to represent the path taken by the agent, including the decision taken in each node as used in Algorithm \ref{alg:define_agent_next_step}.
+
+Our approach utilizes the same mixed radix representation technique as described by \citen{Arthur2023}.
+This method allows an agent to record each decision made along the path without the need to retrospectively analyze previous choices.
+Instead, it only requires the current node's convergence interval and its edges to make decisions, reducing computational overhead. This is based on the following logic:
+
+\begin{itemize}
+    \item The path starts at ``$0.$'', and the starting node is assigned the interval $[0,1]$.
+    \item If the current node has a single child, the agent appends the unary digit $I_1$ to the path. This indicates that there is only one possible path to take from this node.
+    \item If the current node has multiple children (e.g., $n$ children), the agent chooses the $i$th child and appends $(i-1)_n$ to the path. This notation denotes the specific choice among the available children, with $i$ representing the child's position in an ordered list.
+    \item When the agent needs to return to a parent node, it removes the last value appended to the mixed radix representation, effectively backtracking to the previous decision point.
+\end{itemize}
+
+The function $get\_neighbors\_weights$ used in Algorithm \ref{alg:define_agent_next_step}
+is defined by this logic and the Equation \ref{eq:unary_mixed_radix} as can be seen in Algorithm \ref{alg:get_neighbors_weights}
+
+\begin{algorithm}
+\caption{\textbf{Agent} - get\_neighbors\_weights()}
+\label{alg:get_neighbors_weights}
+\begin{algorithmic}
+    \Procedure{get\_neighbors\_weights}{self, unvisited\_neighbors}:
+    \State /* \textit{Fetching current node interval } */
+    \State current\_node\_interval $\gets$ self.known\_tree[self.current\_node].convergence\_interval
+    \State current\_interval\_size $\gets$ (current\_node\_interval[1]-current\_node\_interval[0])
+    \State interval\_chunk $\gets$ current\_interval\_size / unvisited\_neighbors.length()
+    \State
+    \State /* \textit{Calculating interval for each neighbor} */
+    \State neighbors\_weights $\gets$ $[$ $ ]$
+    \ForAll{neighbor $n_{j}$ in unvisited\_neighbors}
+        \State interval\_start $\gets$ current\_node\_interval[0] + interval\_chunk * $j$
+        \State interval\_end $\gets$ interval\_start + interval\_chunk
+        \State neighbors\_weights.append((interval\_start, interval\_end))
+    \EndFor
+    \State \textbf{return} neighbors\_weights
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
+\section{Alternative Exploration Algorithms}
+\label{section_method_alt_exploration_alg}
+
+In our implementation, modifying and experimenting with variations of the exploration algorithm is simple.
+By simply changing the $define\_agent\_next\_step$ function in Algorithm \ref{alg:move_one_step}, we can easily incorporate different  strategies based on the status or algorithm of the agent.
+
+We've explored two alternatives:
+
+\begin{itemize}
+\item \textbf{Backward Interval Filling:} Instead of starting a new DFS after finishing an interval, agents fill the next interval in reverse order. This modification aims to enhance exploration by keeping agents active and improving coverage.
+\item \textbf{Extended Tarry Algorithm:} The extended version of Tarry's algorithm proposed by \citen{Kivelevitch2010}. However, this algorithm is not designed to handle graphs.
+\end{itemize}

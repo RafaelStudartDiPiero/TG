@@ -117,7 +117,7 @@ where $x \in [0,1]$, is given by:
 where $a_j$ are non-negative integers, $m_j$ are integers such that $m_j \geq 2$, and $0 \leq a_j \leq m_j$. \cite{Arthur2023}
 
 
-For instance, if $x$ is represented by $2_{3}1_{2}1_{4}0_{3}1_{5}$, and considering that $a_{i}$ is on the left of $a_{i+1}$, $x$ might be transformed to the decimal base by the following steps:
+For instance, if $x$ is represented by $0.2_{3}1_{2}1_{4}0_{3}1_{5}$, and considering that $a_{i}$ is on the left of $a_{i+1}$, $x$ might be transformed to the decimal base by the following steps:
 
 \begin{align}
 & x=2_{3}1_{2}1_{4}0_{3}1_{5}\\
@@ -128,6 +128,7 @@ For instance, if $x$ is represented by $2_{3}1_{2}1_{4}0_{3}1_{5}$, and consider
 \end{align}
 
 \subsubsection{Extending Mixed Radix with Unary Digits}
+\label{section_definitions_unary_mixed_radix}
 
 In our study, we extended the mixed radix system to include unary digits,
 which are used to represent steps in a sequence where no meaningful decisions are made.
@@ -140,16 +141,17 @@ where $x \in [0,1]$, is given by:
 Let  $U = \{ k \ |\ m_k \neq 1 \} $ be the set of indices where the base \( m_k \) is not unary.
 
 \begin{equation}
+    \label{eq:unary_mixed_radix}
 	x = \sum_{k \in U} u_{k} \prod_{j=0}^{k} \frac{1}{m_j}
 \end{equation}
 where $a_k$ are non-negative integers, $m_j$ are integers such that $m_j \geq 1$, and $0 \leq a_j \leq m_j$.
 
-Consider the mixed radix representation $x=2_{3}X_11_{2}X_1X_11_{4}0_{3}1_{5}$, where $X_1$ represents the unary digit and each $a_{i}$ is on the left of $a_{i+1}$. We can transform
+Consider the mixed radix representation $x=0.2_{3}I_11_{2}I_1I_11_{4}0_{3}1_{5}$, where $I_1$ represents the unary digit and each $a_{i}$ is on the left of $a_{i+1}$. We can transform
 $x$ to the decimal base using the following steps:
 
 \begin{align}
-    & x=2_{3}X_11_{2}X_1X_11_{4}0_{3}1_{5}\\
-    & A=[2,X,1,X,X,1,0,1]\\
+    & x=2_{3}I_11_{2}I_1I_11_{4}0_{3}1_{5}\\
+    & A=[2,I,1,I,I,1,0,1]\\
     & M=[3,1,2,1,1,4,3,5]\\
     & U=[0,2,5,6,7]\\
     & x = \sum_{k \in U} a_{k} \prod_{j=0}^{k} \frac{1}{m_j} \approx 0.8777778
