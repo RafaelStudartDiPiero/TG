@@ -15,7 +15,7 @@ Figure \ref{fig:class_diagram} presents a simplified class diagram that illustra
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics[width=0.5\textwidth]{Cap2/simplified_class_diagram.png}
+    \includegraphics[width=0.9\textwidth]{Cap2/simplified_class_diagram.png}
     \caption{Simplified Class Diagram of the Multi-Agent Maze Exploration Model}
     \label{fig:class_diagram}
 \end{figure}
@@ -131,6 +131,7 @@ we provide a pseudocode representation of this method in Algorithm \ref{alg:move
 
     \State
     \State /* \textit{Taking new step} */
+    \State /* \textit{Neighbors are returned following a specific ordering} */
     \State neighbors $\gets$ graph.get\_neighbors(current\_position)
     \State /* \textit{Get only non visited neighbors} */
     \State non\_visited\_neighbors $\gets$ $[$ $ ]$
@@ -248,6 +249,7 @@ incorporating modifications to handle previously visited nodes and potential cyc
         \item All agents start at the same node, although the specific starting node is arbitrary.
         \item The starting node is assigned the interval $[0,1]$ and is added to the agent's tree.
     \end{itemize}
+    %  TODO TARJAN NOTATION AND IMPROVE
     \item \textbf{Exploration Strategy}
     \begin{itemize}
         \item At each step, an agent examines the adjacent nodes that have not been previously visited by it. To maintain consistency in exploration, these nodes are sorted by their unique identifiers.
@@ -286,25 +288,25 @@ The steps described in the \textbf{Initialization} topic are implemented in the 
 
         \State /* \textit{Calculating the convergence intervals} */
         \State /* \textit{This will be explained in Section \ref{section_method_mixed_radix}} */
-        \State neighbors\_weights $\gets$ self.get\_neighbors\_weight(unvisited\_neighbors)
+        \State intervals $\gets$ self.get\_neighbors\_intervals(unvisited\_neighbors)
         \State
         \State /* \textit{Checking for backtracking or cycle} */
         \ForAll{neighbor $n_{j}$ in unvisited\_neighbors}
-            \If{self.known\_tree[$n_{j}$].convergence\_interval}
+            \If{self.known\_tree[$n_{j}$].interval}
                 \If{self.current\_node in self.known\_tree[$n_{j}$].get\_edges()}
                     \State /* \textit{Backtrack} */
-                    \State neighbors\_weights[$j$] $\gets$ self.known\_tree[$n_{j}$].convergence\_interval
+                    \State intervals[$n_{j}$] $\gets$ self.known\_tree[$n_{j}$].interval
                 \Else
                     \State /* \textit{Cycle} */
                     \State /* \textit{The agent removes the previous node from it's tree} 
                     \State /* \textit{so it doesn't cause a cycle} */
-                    \State self.mark\_cycle($n_{j}$)
+                    \State self.known\_tree.remove\_node($n_{j}$)
                 \EndIf
             \EndIf
         \EndFor
         \State
         \State /* \textit{Adding neighbors to tree} */
-        \State self.add\_neighbors\_to\_tree(unvisited\_neighbors, neighbors\_weights)
+        \State self.add\_neighbors\_to\_tree(unvisited\_neighbors, intervals)
      \algstore{alg1}
 \end{algorithmic}
 \end{algorithm}
@@ -315,17 +317,21 @@ The steps described in the \textbf{Initialization} topic are implemented in the 
     \algrestore{alg1}
         \State
         \State /* \textit{Checking for intersecting intervals} */
+        \State /* \textit{Is important to take notice that as the neighbors are ordered}
+        \State /* \textit{And the interval of a neighbor is proportional to its position}
+        \State /* \textit{As we will see in Algorithm \ref{alg:get_neighbors_intervals}, the neighbor are visited in}
+        \State /* \textit{incresing order of intervals} */
         \ForAll{neighbor $n_{j}$ in unvisited\_neighbors}
-            \State max\_neighbor $\gets$ neighbors\_weights[$n_{j}$][1]
-            \State min\_neighbor $\gets$ neighbors\_weights[$n_{j}$][0]
+            \State max\_neighbor $\gets$ intervals[$n_{j}$][1]
+            \State min\_neighbor $\gets$ intervals[$n_{j}$][0]
             \State max\_agent $\gets$ self.interval[1]
             \State min\_agent $\gets$ self.interval[0]
             \State
-            \If{max\_agent < min\_node}
+            \If{max\_agent < min\_neighbor}
+                \State 
                 \State /* \textit{If the node's interval is on the right of the agent's interval, surely the}
-                \State \textit{agent has finished its interval. Since the order of the nodes are well defined,}
-                \State \textit{and in increasing order of intervals, the following condition improve the}
-                \State \textit{algorithm's performance. It is optional} */
+                \State \textit{agent has finished its interval, since the nodes are in increasing order of}
+                \State \textit{intervals as previously mentioned} */
                 \State finished\_interval $\gets$ TRUE
                 \State \textbf{break}
             \Else{ min\_agent < max\_neighbor \textbf{and} max\_agent > min\_neighbor}
@@ -365,31 +371,31 @@ Instead, it only requires the current node's convergence interval and its edges 
 \begin{itemize}
     \item The path starts at ``$0.$'', and the starting node is assigned the interval $[0,1]$.
     \item If the current node has a single child, the agent appends the unary digit $I_1$ to the path. This indicates that there is only one possible path to take from this node.
-    \item If the current node has multiple children (e.g., $n$ children), the agent chooses the $i$th child and appends $(i-1)_n$ to the path. This notation denotes the specific choice among the available children, with $i$ representing the child's position in an ordered list.
+    \item If the current node has multiple children (e.g., $n$ children), the agent chooses the $i$th child and appends $(i-1)_n$ to the path. This notation denotes the specific choice among the available children, with $i$ representing the child's position in an ordered list and the subscript $n$ denotes the number of children or the length of the ordered list.
     \item When the agent needs to return to a parent node, it removes the last value appended to the mixed radix representation, effectively backtracking to the previous decision point.
 \end{itemize}
 
-The function $get\_neighbors\_weights$ used in Algorithm \ref{alg:define_agent_next_step}
-is defined by this logic and the Equation \ref{eq:unary_mixed_radix} as can be seen in Algorithm \ref{alg:get_neighbors_weights}
+The function $get\_neighbors\_intervals$ used in Algorithm \ref{alg:define_agent_next_step}
+is defined by this logic and the Equation \ref{eq:unary_mixed_radix} as can be seen in Algorithm \ref{alg:get_neighbors_intervals}
 
 \begin{algorithm}
-\caption{\textbf{Agent} - get\_neighbors\_weights()}
-\label{alg:get_neighbors_weights}
+\caption{\textbf{Agent} - get\_neighbors\_intervals()}
+\label{alg:get_neighbors_intervals}
 \begin{algorithmic}
-    \Procedure{get\_neighbors\_weights}{self, unvisited\_neighbors}:
+    \Procedure{get\_neighbors\_intervals}{self, unvisited\_neighbors}:
     \State /* \textit{Fetching current node interval } */
-    \State current\_node\_interval $\gets$ self.known\_tree[self.current\_node].convergence\_interval
+    \State current\_node\_interval $\gets$ self.known\_tree[self.current\_node].interval
     \State current\_interval\_size $\gets$ (current\_node\_interval[1]-current\_node\_interval[0])
     \State interval\_chunk $\gets$ current\_interval\_size / unvisited\_neighbors.length()
     \State
     \State /* \textit{Calculating interval for each neighbor} */
-    \State neighbors\_weights $\gets$ $[$ $ ]$
+    \State intervals $\gets$ $[$ $ ]$
     \ForAll{neighbor $n_{j}$ in unvisited\_neighbors}
         \State interval\_start $\gets$ current\_node\_interval[0] + interval\_chunk * $j$
         \State interval\_end $\gets$ interval\_start + interval\_chunk
-        \State neighbors\_weights.append((interval\_start, interval\_end))
+        \State intervals.append((interval\_start, interval\_end))
     \EndFor
-    \State \textbf{return} neighbors\_weights
+    \State \textbf{return} intervals
     \EndProcedure
 \end{algorithmic}
 \end{algorithm}
@@ -405,5 +411,5 @@ We've explored two alternatives:
 
 \begin{itemize}
 \item \textbf{Backward Interval Filling:} Instead of starting a new DFS after finishing an interval, agents fill the next interval in reverse order. This modification aims to enhance exploration by keeping agents active and improving coverage.
-\item \textbf{Extended Tarry Algorithm:} The extended version of Tarry's algorithm proposed by \citen{Kivelevitch2010}. However, this algorithm is not designed to handle graphs.
+\item \textbf{Extended Tarry Algorithm:} The extended version of Tarry's algorithm proposed by \citen{Kivelevitch2010}.
 \end{itemize}
