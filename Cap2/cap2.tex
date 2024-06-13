@@ -221,6 +221,46 @@ Figure \ref{fig:graph_dispersion} illustrates this concept, showing a graph with
     \label{fig:graph_dispersion}
 \end{figure}
 
+It is important to note that while the numerical intervals are non-overlapping,
+the dispersion may not always be fair or uniform.
+This is evident in Figure \ref{fig:graph_dispersion_unfair},
+which illustrates three agents dispersing in a non-uniform graph,
+contrasting with the more uniform dispersion shown in Figure \ref{fig:graph_dispersion}.
+The graph shows the nodes colored based on the agent intervals they fall into.
+If a node has more than one color, it indicates that the node is within the intervals of multiple agents.
+
+\begin{figure}[ht!]
+    \centering
+    \begin{forest}
+        for tree={
+            circle,
+            draw,
+            minimum size=2em,
+        }
+        [root, label=above:{\textit{Starting point}}
+            [,halfandhalf={red!100}{blue!100}{}
+                [,halfandhalf={red!100}{blue!100}{}
+                    [,fill=red!100
+                    ]
+                    [,fill=blue!100
+                        [,fill=blue!100]
+                        [,fill=blue!100]
+                    ]
+                    [,fill=blue!100
+                        [,fill=blue!100]
+                        [,fill=blue!100]
+                        [,fill=blue!100, label=below:{\textit{Goal}}]
+                    ]
+                ]
+            ]
+            [,halfandhalf={blue!100}{yellow!100}{}
+            ]
+            ]
+    \end{forest}
+    \caption{Three agents (Red, Blue, and Yellow) disperse in a non-uniform graph.}
+    \label{fig:graph_dispersion_unfair}
+\end{figure}
+
 Mathematically, this dispersion can be expressed by a set of equations.
 Assume there are $k$ agents, denoted as $a_1,a_2,a_3,...,a_k$.
 The distribution of intervals can be represented as shown in Equation \ref{eq:interval_dispersion},
@@ -249,7 +289,6 @@ incorporating modifications to handle previously visited nodes and potential cyc
         \item All agents start at the same node, although the specific starting node is arbitrary.
         \item The starting node is assigned the interval $[0,1]$ and is added to the agent's tree.
     \end{itemize}
-    %  TODO TARJAN NOTATION AND IMPROVE
     \item \textbf{Exploration Strategy}
     \begin{itemize}
         \item At each step, an agent examines the adjacent nodes that have not been previously visited by it. To maintain consistency in exploration, these nodes are sorted by their unique identifiers.
@@ -261,10 +300,14 @@ incorporating modifications to handle previously visited nodes and potential cyc
             \item \textbf{Multiple Children}: If there are multiple children, the current node's convergence interval is uniformly divided among them.
             
         \end{itemize}
-        \item Each adjacent node is then added to the agent's tree along with the corresponding edge and its assigned interval. A node that has not been visited but already appears in the tree with a different interval can indicate two scenarios:
+        \item Each adjacent node is then added to the agent's tree along with the corresponding edge and its assigned interval. 
+        \item Since we are analyzing generic graphs, when adding a node, referred to as the target node, to the tree, it is possible to encounter a scenario where the target node has not been visited yet but already appears in the tree.
+        This can happen in situations:
             \begin{itemize}
-                \item \textbf{Backtracking}: If the node has been previously mapped by the same agent and the current edge exists in the tree, it indicates backtracking. In this case, the interval is not altered.
-                \item \textbf{Cycle Detection}: If the edge between the current node and the adjacent node does not exist in the tree, it suggests a potential cycle. The node is marked, and its interval is updated to reflect the new calculation.
+                \item \textbf{Backtracking}: If the current node is the father of the target node, it indicates backtracking. In this case, the interval remains unchanged and there are no changes to the agent's tree.
+                \item \textbf{Cycle}: If it is not a backtrack situation, the added edge would be a return edge, as identified by Tarjan's Algorithm, indicating a cycle. To address this, the previous
+                occurrence of the target node is removed from the tree to prevent cycles
+                and is then re-added with its new edge and interval.
             \end{itemize}
         \item The agent then chooses the first node whose convergence interval intersects with its own. If no such node exists or if all adjacent nodes have been visited, the current node is marked as explored, and the agent backtracks to the parent node.
     \end{itemize}
@@ -374,6 +417,25 @@ Instead, it only requires the current node's convergence interval and its edges 
     \item If the current node has multiple children (e.g., $n$ children), the agent chooses the $i$th child and appends $(i-1)_n$ to the path. This notation denotes the specific choice among the available children, with $i$ representing the child's position in an ordered list and the subscript $n$ denotes the number of children or the length of the ordered list.
     \item When the agent needs to return to a parent node, it removes the last value appended to the mixed radix representation, effectively backtracking to the previous decision point.
 \end{itemize}
+
+To illustrate this concept, we present the mixed radix path representation between the \textit{Starting Point} and \textit{Goal} from the
+Figure \ref{fig:graph_dispersion_unfair}.
+
+\begin{equation}
+    x = 0_{2}I_{1}2_{3}2_{3}
+\end{equation}
+
+Following the conversion as described by Equation \ref{eq:unary_mixed_radix}, 
+we can transform this mixed radix notation into a numerical value:
+
+\begin{align}
+    & x=0_{2}I_{1}2_{3}2_{3}\\
+    & A=[0,I,2,2]\\
+    & M=[2,1,3,3]\\
+    & U=[0,2,3]\\
+    & x = \sum_{k \in U} a_{k} \prod_{j=0}^{k} \frac{1}{m_j} \approx 0.4444444
+\end{align}
+
 
 The function $get\_neighbors\_intervals$ used in Algorithm \ref{alg:define_agent_next_step}
 is defined by this logic and the Equation \ref{eq:unary_mixed_radix} as can be seen in Algorithm \ref{alg:get_neighbors_intervals}

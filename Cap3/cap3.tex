@@ -43,13 +43,14 @@ considering the default variation of the algorithm.
 As evident from the figures, our results closely match the original findings,
 demonstrating that our modifications have not altered the core functionality of the algorithm.
 
-\section{Visualization Improvements}
-\label{section_result_visualization}
+\section{Graph Visualization}
+\label{section_result_graph_visualization}
 
-Another significant improvement is the visualization capability for graphs.
+One significant enhancement is the capability to visualize graphs
+beyond perfect mazes, expanding our algorithm's applicability to general graphs.
 
-To demonstrate this, we ran the algorithm on an imperfect maze, a cyclic graph, using three agents.
-Below, we present the results: the overall exploration of the maze and the individual trees constructed by each agent.
+To demonstrate this capability, we applied our algorithm to explore
+an imperfect maze, which is a cyclic graph, using three agents. The overall exploration of the maze is depicted in Figure \ref{fig_imperfect_maze_exploration}.
 
 \begin{figure}[H]
 \centering
@@ -57,6 +58,22 @@ Below, we present the results: the overall exploration of the maze and the indiv
 \caption{Exploration of an imperfect maze(graph) by three agents.}
 \label{fig_imperfect_maze_exploration}
 \end{figure}
+
+This visualization showcases how our algorithm can handle graphs
+with cycles, illustrating the adaptability of our approach.
+To enable comparisons with our previous work on perfect mazes,
+we developed utilities to convert between the old and new graph formats.
+
+\section{Agent Tree Visualization}
+\label{section_result_tree_visualization}
+
+In addition to overall graph exploration,
+we enhanced our implementation to visualize the individual trees constructed by each agent during the exploration process.
+These trees reflect the paths taken by agents, incorporating features such as handling
+cycles and displaying intervals for each node.
+
+The Figures \ref{fig_agent_1_tree}, \ref{fig_agent_2_tree} and \ref{fig_agent_3_tree}
+show the trees constrcuted by the 3 agents for the exploration displayed in Figure \ref{fig_imperfect_maze_exploration}.
     
 \begin{figure}[H]
 \centering

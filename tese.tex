@@ -45,6 +45,22 @@
 \usepackage{forest}
 \usepackage{svg}
 
+\tikzset{
+    halfandhalf/.style n args={3}{
+        path picture={
+            \begin{scope}
+                \clip (path picture bounding box);
+                % Left half
+                \fill[#1] (path picture bounding box.south west) rectangle
+                          (path picture bounding box.north);
+                % Right half
+                \fill[#2] (path picture bounding box.south) rectangle
+                          (path picture bounding box.north east);
+            \end{scope}
+            \node[align=center] at (path picture bounding box.center) {#3};
+        }
+    }
+}
 
 
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
