@@ -7,7 +7,7 @@ One of the key challenges in computer science is graph traversal and exploration
 with a specific purpose. This topic has practical applications across diverse fields, such as network routing, robotics, procedural generation, electronics design, and more.
 
 When considering the complexities and time constraints imposed by real-world environments,
-graph exploration must be expanded to consider multi-agent systems. In such systems, multiple
+graph exploration must be extended to consider multi-agent systems. In such systems, multiple
 autonomous agents collaborate to explore graphs, aiming to distribute tasks to achieve optimal efficiency. However, communication strategies
 on these systems are challenging, as they need to balance the trade-off between the amount of information shared among agents
 versus the quality of the solution. In other words, while communication can allow
@@ -22,20 +22,19 @@ concretely established in the literature. We believe this gap is significant, as
 scenarios where communication is limited or impossible due to bandwidth limitations or energy consumption, such as deep-sea exploration,
 search with energy-limited agents, or high-efficiency state space search. 
 
-This work aims to address this gap by presenting a continuation
-and expansion of a method initially developed for perfect maze exploration \cite{Naeem2021} as discussed by \citen{Arthur2023}.
-Building upon this groundwork, the research extends the method to accommodate diverse graph structures by removing dependencies on specific projects. 
-General improvements, such as structuring the exploration into well-defined and extensible classes
-and incorporating built-in testing, strive to make the development process more versatile and robust, paving the way for broader applications in multi-agent systems.
+This work aims to address this gap by presenting a continuation and expansion of a method initially developed for perfect maze exploration \cite{Naeem2021}, as discussed by \citen{Arthur2023}. Building upon this groundwork, the research extends the method to accommodate diverse graph structures by removing dependencies on specific projects. Additionally, it seeks to compare and establish a lower bound on the time complexity for graphs with varying properties.
+
+Alongside this main objective, this research seeks to incorporate heuristics and alternative strategies proven effective in zero-communication scenarios to enhance Tarry's algorithm. As outlined by \citen{Kivelevitch2010}, Tarry's algorithm relies on a random selection of neighbors for exploration, which may not always yield optimal results for different graph structures. Our goal was not only to analyze how these choices are made but also to investigate whether a secondary algorithm or heuristic could guide the selection process, thereby improving the overall efficiency of exploration.
 
 
 \section{Objective}
 \label{section_intro_objective}
 
-This study aims to propose a viable algorithm for graph exploration by multi-agents, specifically targeting the identification of a goal node.
+This study aims to propose a viable algorithm for graph exploration by multi-agents, specifically for the search of a goal node.
 A previous paper by \citen{Arthur2023} discussed an approach for perfect maze exploration, which can be modeled as a tree, a connected acyclic undirected graph.
-Expanding the proposed algorithm to connected cyclic graphs could allow further discussion and contribute to research in real-world applications 
-such as robotics, as well as in the theoretical analysis of parallelism and communication between agents.
+Expanding the proposed algorithm to connected cyclic graphs enables the definition of a lower bound for exploration algorithms. This provides a benchmark for evaluating and comparing exploration strategies, allowing researchers to quantify the impact of communication on exploration efficiency relative to a baseline no-communication algorithm. This comparison is crucial for assessing the cost of implementation and the value brought by communication in contrast to a simpler, zero-communication strategy.
+
+Additionally, this research aims to improve the existing Tarry's algorithm by leveraging insights gained from the development of the no-communication exploration strategy. The objective is to integrate these strategies as heuristics or enhancements to Tarry's original approach, aiming to optimize performance while preserving the algorithm's core logic.
 
 \section{Definitions}
 \label{section_intro_definitions}

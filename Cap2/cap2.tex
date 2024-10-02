@@ -3,7 +3,9 @@ our multi-agent search algorithm.
 Section \ref{section_method_modeling} introduces the models and classes developed to improve our algorithm.
 Section \ref{section_method_algorithm} describes the core concepts of our algorithm and provides pseudocode to guide its implementation.
 Section \ref{section_method_mixed_radix} presents a mixed radix numerical representation used for the agent's path and examples to demonstrate its functionality.
-Finally, \ref{section_method_alt_exploration_alg} details how we can extend our solution to allow different exploration algorithms.
+Section \ref{section_method_alt_exploration_alg} presents alternative exploration strategies, including Backward Interval Filling and four Tarry algorithm variations to improve efficiency and coordination.
+Section \ref{section_method_graph_visualization} highlights the algorithm's capability to handle complex graphs, as shown through an imperfect maze exploration.
+Finally, Section \ref{section_method_tree_visualization} visualizes individual exploration trees for each agent, demonstrating their paths and handling of graph structures.
 
 \section{Modeling}
 \label{section_method_modeling}
@@ -467,11 +469,155 @@ is defined by this logic and the Equation \ref{eq:unary_mixed_radix} as can be s
 \label{section_method_alt_exploration_alg}
 
 In our implementation, modifying and experimenting with variations of the exploration algorithm is simple.
-By simply changing the $define\_agent\_next\_step$ function in Algorithm \ref{alg:move_one_step}, we can easily incorporate different  strategies based on the status or algorithm of the agent.
+By simply altering the $define\_agent\_next\_step$ function in Algorithm \ref{alg:move_one_step}, we can easily incorporate different strategies based on the agent's current status or algorithm.
 
-We've explored two alternatives:
+In this work, we have explored five alternatives: one variation of our core algorithm and four adaptations of Tarry's algorithm.
+
+\subsection{Exploration Algorithm without Communication}
+\label{section_method_zero_comm}
+
+\subsubsection{Backward Interval Filling}
+\label{section_backward_interval}
+
+The \textbf{Backward Interval Filling} algorithm is based on the primary zero-communication strategy developed in this work. Instead of initiating a new Depth-First Search (DFS) traversal after completing a designated interval, agents continue exploring by filling the next interval in reverse order. This modification ensures that agents remain active, even after finishing their primary interval, enhancing the overall graph coverage and reducing idle time.
+
+\subsection{Exploration Strategies with Communication: Tarry Algorithm Variations}
+
+\label{section_method_tarry_variations}
+
+This section presents several adaptations of Tarry's algorithm that utilize communication between agents. Each variation builds upon the foundational logic of Tarry's approach but introduces different heuristics and optimizations aimed at improving performance and accommodating various graph structures.
+
+\subsubsection{Extended Tarry Algorith}
+\label{section_method_extended_tarry}
+
+The \textbf{Extended Tarry Algorithm}, proposed by \citen{Kivelevitch2010}, is an adaptation of Tarry's algorithm. In this approach, agents share information about visited nodes, enabling them to identify unvisited cells and determine the Last Common Location (LCL)—the most recent shared position among agents before diverging paths.The algorithm consists of two phases:
 
 \begin{itemize}
-\item \textbf{Backward Interval Filling:} Instead of starting a new DFS after finishing an interval, agents fill the next interval in reverse order. This modification aims to enhance exploration by keeping agents active and improving coverage.
-\item \textbf{Extended Tarry Algorithm:} The extended version of Tarry's algorithm proposed by \citen{Kivelevitch2010}.
+    \item \textbf{Exploration Phase}: Each agent moves to unvisited cells, or to cells unvisited by itself, choosing arbitrarily among multiple options. If all cells have been visited, agents retreat to the last unvisited cell, marking cells as dead ends.
+    \item \textbf{Cooperative Backtracking Phase}:Once an agent finds the goal and is defined as the pioneer, other agents backtrack to the Last Common Location (LCL) with it and follow the pioneer's path to the goal.
 \end{itemize}
+
+The functions $define\_next\_first\_phase\_tarry\_step$ and $define\_next$
+
+$\_second\_phase\_tarry\_step$, as shown in Algorithms \ref{alg:define_agent_next_first_phase_step} and \ref{alg:define_agent_next_second_phase_step}, implement this logic.
+
+\begin{algorithm}
+\caption{\textbf{Agent} - define\_next\_first\_phase\_tarry\_step()}
+\label{alg:define_agent_next_first_phase_step}
+\begin{algorithmic}
+    \Procedure{define\_next\_first\_phase\_tarry\_step}{non\_visited\_neighbors}:
+    \State new\_neighbors $\gets$ [] 
+    \State already\_visited\_neighbors $\gets$ []
+    \State /* \textit{Splitting Neighbors } */
+    \ForAll{neighbor in non\_visited\_neighbors}:
+        \If{neighbor not visited and not deadEnd}:
+            \State new\_neighbors.append(neighbor)
+        \ElsIf{neighbor visited}:
+            \State already\_visited\_neighbors.append(neighbor)
+        \EndIf
+    \EndFor
+
+
+    \If{new\_neighbors is not empty}:
+        \State /* \textit{Choosing a random non-visited neighbor } */
+        \State \textbf{return} random\_choice(new\_neighbors)
+    \ElsIf{already\_visited\_neighbors is not empty}:
+        \State /* \textit{Choosing a random non-visited by this agent neighbor } */
+        \State \textbf{return} random\_choice(already\_visited\_neighbors)
+    \EndIf
+    \State \textbf{return} "-1" 
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}
+\caption{\textbf{Agent} - define\_next\_second\_phase\_tarry\_step()}
+\label{alg:define_agent_next_second_phase_step}
+\begin{algorithmic}
+    \Procedure{define\_next\_second\_phase\_tarry\_step}{non\_visited\_neighbors,
+    
+pioneer\_id, pioneer\_effective\_path, lcl}            
+        \If{self.status == "TARRY\_FIRST\_PHASE"}
+            \State self.status $\gets$ "TARRY\_SECOND\_PHASE"
+        \EndIf
+        
+        \If{self.status == "TARRY\_SECOND\_PHASE"}
+            \If{self.current\_node\_id != lcl[pioneer\_id][self.id]}
+                \State /* \textit{Step back until the last common location } */
+                \State \textbf{return} "-1"
+            \Else
+                \State self.status $\gets$ "TARRY\_FOLLOW\_PIONEER"
+            \EndIf
+        \EndIf
+
+        current\_node\_index $\gets$ pioneer\_effective\_path.index(self.current\_node\_id)
+        \State /* \textit{Follow pioneer's path} */
+        \State \textbf{return} pioneer\_effective\_path[current\_node\_index + 1]
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Tarry Tie-Breaker Variation}
+
+In this variation, agents employ Tarry's algorithm but modify the selection process described in Algorithm \ref{alg:define_agent_next_first_phase_step}. Instead of randomly choosing among valid neighbors, agents prioritize their choices based on interval assignments derived from mixed radix path intervals. This enhancement aims to improve exploration efficiency by leveraging structured knowledge of the graph's structure to better disperse the agents.
+
+\subsubsection{Tarry Interval Priority Variation}
+
+Each agent attempts to fill its assigned interval as described in Algorithm \ref{alg:define_agent_next_step}, but rather than using depth-first search (DFS) or backward filling once the interval is complete, it begins with Tarry's algorithm, as described in Algorithms \ref{alg:define_agent_next_first_phase_step} and \ref{alg:define_agent_next_second_phase_step}. This strategy seeks to leverage the additional information gathered during the interval search to enhance exploration efficiency and reduce redundant backtracking.
+
+\subsubsection{Delayed Tarry Variation}
+
+In this approach, agents begin by navigating their assigned intervals for a predetermined number of steps to ensure an initial spread across distinct branches of the graph. After this dispersal phase, they switch to Tarry's algorithm to continue exploration. This method aims to reduce collisions by increasing the probability that agents explore separate regions early on, leading to improved coverage and efficiency in the overall exploration.
+
+\section{Graph Visualization}
+\label{section_method_graph_visualization}
+
+One significant enhancement is the capability to visualize graphs
+beyond perfect mazes, expanding our algorithm's applicability to general graphs.
+
+To demonstrate this capability, we applied our algorithm to explore
+an imperfect maze, which is a cyclic graph, using three agents. The overall exploration of the maze is depicted in Figure \ref{fig_imperfect_maze_exploration}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{Cap2/maze_imperfect_exploration.png}
+\caption{Exploration of an imperfect maze(graph) by three agents.}
+\label{fig_imperfect_maze_exploration}
+\end{figure}
+
+This visualization showcases how our algorithm can handle graphs
+with cycles, illustrating the adaptability of our approach.
+
+\section{Agent Tree Visualization}
+\label{section_method_tree_visualization}
+
+In addition to overall graph exploration,
+we developed a method to visualize the individual exploration trees constructed by each agent during the process. These trees represent the paths traversed by the agents and provide insight into the structure of their independent exploration, including how cycles are managed and intervals are assigned to each node.
+
+The Figures \ref{fig_agent_1_tree}, \ref{fig_agent_2_tree} and \ref{fig_agent_3_tree}
+show the trees constructed by the 3 agents for the exploration displayed in Figure \ref{fig_imperfect_maze_exploration}.
+    
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{Cap2/agent_1.png}
+\caption{Trees constructed by agent post-exploration: \textbf{Agent 1}.}
+\label{fig_agent_1_tree}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{Cap2/agent_2.png}
+\caption{Trees constructed by agent post-exploration: \textbf{Agent 2}.}
+\label{fig_agent_2_tree}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{Cap2/agent_3.png}
+\caption{Trees constructed by agent post-exploration: \textbf{Agent 3}.}
+\label{fig_agent_3_tree}
+\end{figure}
+    
+These visualizations illustrate how each agent independently constructs its own representation of the graph,
+adapting to the imperfections and resulting in different exploration paths.
