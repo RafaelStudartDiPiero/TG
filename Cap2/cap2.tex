@@ -72,10 +72,9 @@ The pseudocode in Algorithm \ref{alg:simulate} provides a breakdown of the funct
         \EndFor
     \EndWhile
     \State 
-    \State /* \textit{Calculing Metrics} */
+    \State /* \textit{Calculating Metrics} */
     \ForAll{agent in agents}
         \State /* \textit{Simplified function for calculating metrics} */
-        \State /* \textit{How each specific metric is calculated is not relevant for our study} */
         \State calculate\_metrics(agent)
     \EndFor
     \State
@@ -92,8 +91,8 @@ The pseudocode in Algorithm \ref{alg:simulate} provides a breakdown of the funct
 
 The \textbf{Graph} class, as introduced in Section \ref{section_definitions_graph},
 serves as a basic representation of the graph structure for our multi-agent exploration.
-This class leverages existing libraries to efficiently manage nodes and edges,
-facilitating the agents' traversal of the graph.
+Our implementation is built over the graph library NetworkX \cite{Hagberg2008}, allowing for the efficient management of nodes and edges and facilitating the agents' traversal of the graph.
+
 
 A key method within this class is $get\_neighbors$.
 This method returns a list of neighboring nodes in a specific order, aiding in the consistent traversal of the graph.
@@ -226,7 +225,7 @@ Figure \ref{fig:graph_dispersion} illustrates this concept, showing a graph with
 It is important to note that while the numerical intervals are non-overlapping,
 the dispersion may not always be fair or uniform.
 This is evident in Figure \ref{fig:graph_dispersion_unfair},
-which illustrates three agents dispersing in a non-uniform graph,
+which illustrates three agents dispersing in an unbalanced tree,
 contrasting with the more uniform dispersion shown in Figure \ref{fig:graph_dispersion}.
 The graph shows the nodes colored based on the agent intervals they fall into.
 If a node has more than one color, it indicates that the node is within the intervals of multiple agents.
@@ -303,14 +302,7 @@ incorporating modifications to handle previously visited nodes and potential cyc
             
         \end{itemize}
         \item Each adjacent node is then added to the agent's tree along with the corresponding edge and its assigned interval. 
-        \item Since we are analyzing generic graphs, when adding a node, referred to as the target node, to the tree, it is possible to encounter a scenario where the target node has not been visited yet but already appears in the tree.
-        This can happen in situations:
-            \begin{itemize}
-                \item \textbf{Backtracking}: If the current node is the father of the target node, it indicates backtracking. In this case, the interval remains unchanged and there are no changes to the agent's tree.
-                \item \textbf{Cycle}: If it is not a backtrack situation, the added edge would be a return edge, as identified by Tarjan's Algorithm, indicating a cycle. To address this, the previous
-                occurrence of the target node is removed from the tree to prevent cycles
-                and is then re-added with its new edge and interval.
-            \end{itemize}
+        \item When adding a node, called the target node, to the tree in generic graphs, a cycle may be detected if the target node has not been visited yet but already appears in the tree. In this case, the new edge would form a return edge, as identified by Tarjan's Algorithm. To prevent cycles, the previous occurrence of the target node is removed from the tree, and it is then re-added with its updated edge and interval, ensuring a valid acyclic structure for the exploration tree. In Figure \ref{fig_agent_3_tree}, an example of this situation is shown, where the target node was not actually removed but was instead renamed to allow visualization of the cycle occurrence.
         \item The agent then chooses the first node whose convergence interval intersects with its own. If no such node exists or if all adjacent nodes have been visited, the current node is marked as explored, and the agent backtracks to the parent node.
     \end{itemize}
     \item \textbf{Completion Criteria}
@@ -343,7 +335,7 @@ The steps described in the \textbf{Initialization} topic are implemented in the 
                     \State intervals[$n_{j}$] $\gets$ self.known\_tree[$n_{j}$].interval
                 \Else
                     \State /* \textit{Cycle} */
-                    \State /* \textit{The agent removes the previous node from it's tree} 
+                    \State /* \textit{The agent removes the previous node from its tree} 
                     \State /* \textit{so it doesn't cause a cycle} */
                     \State self.known\_tree.remove\_node($n_{j}$)
                 \EndIf
@@ -479,7 +471,7 @@ In this work, we have explored five alternatives: one variation of our core algo
 \subsubsection{Backward Interval Filling}
 \label{section_backward_interval}
 
-The \textbf{Backward Interval Filling} algorithm is based on the primary zero-communication strategy developed in this work. Instead of initiating a new Depth-First Search (DFS) traversal after completing a designated interval, agents continue exploring by filling the next interval in reverse order. This modification ensures that agents remain active, even after finishing their primary interval, enhancing the overall graph coverage and reducing idle time.
+The \textbf{Backward Interval Filling} algorithm extends the primary zero-communication strategy developed in this work. Instead of initiating a new Depth-First Search (DFS) traversal after completing a designated interval, agents continue exploring by filling the next interval in reverse order. Once an interval is finished, the agent moves up to the nearest common ancestor shared with the start of the next interval, then proceeds to explore downwards. This modification ensures that agents remain active, even after finishing their primary interval, enhancing the overall graph coverage and reducing idle time.
 
 \subsection{Exploration Strategies with Communication: Tarry Algorithm Variations}
 
@@ -619,5 +611,4 @@ show the trees constructed by the 3 agents for the exploration displayed in Figu
 \label{fig_agent_3_tree}
 \end{figure}
     
-These visualizations illustrate how each agent independently constructs its own representation of the graph,
-adapting to the imperfections and resulting in different exploration paths.
+These visualizations reveal how each agent independently constructs its own representation of the graph, adapting to imperfections and resulting in different exploration paths. For instance, Figure \ref{fig_agent_3_tree} shows a cycle occurrence, demonstrating how cycles can appear during exploration. Although cycles are detected, they are disregarded in the actual traversal.
