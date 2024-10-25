@@ -3,12 +3,74 @@ This section presents the results of comparing the proposed no-communication alg
 \section{Datasets for Algorithm Evaluation} 
 \label{section_datasets}
 
-This section describes the datasets used to evaluate the performance of the algorithms. The datasets consist of two types of graphs:
+This section describes the datasets used to evaluate the performance of the algorithms. The datasets consist of three types of graphs:
 
 \begin{itemize} 
     \item Perfect Mazes: The dataset of perfect mazes \cite{Naeem2021} is the same as the one used by \citen{Arthur2023} and includes 250 mazes for each of four sizes: 10x10, 20x20, 30x30, and 40x40.
-    \item Random Trees: The dataset of random trees was generated using the $random\_$ $unlabeled\_tree$ method from NetworkX \cite{Hagberg2008}. This dataset includes 250 trees for each of the following sizes: 100, 250, 500, 1000, and 1500 nodes. After generating the graphs, nodes that did not contribute any new decisions to the tree (specifically, nodes with only two edges) were contracted by adding an edge between their two neighbors and then removed. 
+    \item Random Trees: The dataset of random trees was generated using the $random\_$ $unlabeled\_tree$ method from NetworkX \cite{Hagberg2008}. This function generates an unlabeled tree uniformly at random using Wilf's algorithm \cite{Wilf1981}, resulting in 250 trees for sizes: 100, 250, 500, 1000, and 1500 nodes. The goal node was chosen by randomly selecting one of the leaf nodes.Compared to the perfect mazes, these trees tend to be less deep and broader.
+    \item Barabási-Albert Graphs: The dataset of Barabási-Albert graphs was generated using the dual Barabási-Albert preferential attachment method \cite{Moshiri2018} from NetworkX, specifically $dual\_barabasi\_albert\_graph$ function. This method constructs a random graph by incrementally adding new nodes that connect to existing nodes with a higher degree \cite{Barabasi1999}. For this dataset, multiple graphs were generated with parameters configured to attach 2 and 3 edges from each new node, with a probability of 0.2. This approach results in networks that exhibit a power-law degree distribution, distinguishing them from the other datasets. The dataset includes graphs of sizes 100, 250, 500, 1000, and 1500 nodes.
 \end{itemize}
+
+The sizes were chosen to approximately match the maze sizes used in \citen{Arthur2023} and to ensure that the computational demands for running all experiments remained manageable. For example, a 40x40 maze has 1600 cells, so graph sizes such as 1500 nodes were selected to provide a comparable level of complexity while keeping the analysis feasible across multiple runs.
+
+For all datasets, after generating the graphs, nodes that did not contribute new decisions— specifically, those with a degree of 2 —were contracted. This contraction involves adding an edge between the node's two neighbors and removing the node itself. In the case of the perfect mazes dataset, this effectively eliminates every corridor. This removal process conserves memory and processing time, thus enhancing exploration efficiency and analysis, which particularly relevant for larger datasets. However, this process was not applied to the perfect mazes dataset used by \citen{Arthur2023}, as doing so would alter the structure of the mazes and affect the calculation of metrics, hindering valid comparisons.
+
+Each dataset has distinct characteristics that can significantly influence the performance of the evaluated algorithms. To illustrate these effects, we present two tables: Table \ref{tab:average_depth} shows the average depth of a Depth-First Search (DFS) exploration for each generated graph, excluding cycles, while Table \ref{tab:average_leaf_nodes} displays the average number of leaf nodes resulting from the same DFS exploration.
+
+Additionally, we include Table \ref{tab:nodes_after_contraction}, which shows the average number of nodes remaining after the contraction process for each dataset. This table provides further insight into the structure of the datasets post-contraction.
+
+\begin{table}[H]
+    \centering
+    \caption{Average Depth of DFS Exploration for Each Dataset}
+    \label{tab:average_depth}
+    \begin{tabular}{|c|c|c|c|c|c|c|} 
+        \hline
+        \textbf{Dataset} & \textbf{10x10/100} & \textbf{250} & \textbf{20x20/500} & \textbf{30x30/1000} & \textbf{40x40/1500} \\ 
+        \hline
+        Perfect Mazes & 6.79 & - & 18.31 & 31.29 & 48.98 \\ 
+        \hline
+        Random Trees & 6.78 & 10.52 & 15.20 & 22.24 & 27.04 \\ 
+        \hline
+        Barabási-Albert & 10.69 & 21.17 & 33.65 & 57.04 & 66.10 \\ 
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{Average Number of Leaf Nodes for Each Dataset}
+    \label{tab:average_leaf_nodes}
+    \begin{tabular}{|c|c|c|c|c|c|} 
+        \hline
+        \textbf{Dataset} & \textbf{10x10/100} & \textbf{250} & \textbf{20x20/500} & \textbf{30x30/1000} & \textbf{40x40/1500} \\ 
+        \hline
+        Perfect Mazes & 11.58 & - & 41.88 & 92.58 & 162.14 \\ 
+        \hline
+        Random Trees & 34.76 & 85.64 & 172.22 & 345.41 & 516.53 \\ 
+        \hline
+        Barabási-Albert & 21.17 & 46.70 & 81.21 & 149.26 & 191.41 \\ 
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{Average Number of Nodes After Contraction for Each Dataset}
+    \label{tab:nodes_after_contraction}
+    \begin{tabular}{|c|c|c|c|c|c|} 
+        \hline
+        \textbf{Dataset} & \textbf{10x10/100} & \textbf{250} & \textbf{20x20/500} & \textbf{30x30/1000} & \textbf{40x40/1500} \\ 
+        \hline
+        Perfect Mazes & 100 & - & 500 & 1000 & 1500 \\ 
+        \hline
+        Random Trees & 51.26 & 124.56 & 251.03 & 502.02 & 752.89 \\ 
+        \hline
+        Barabási-Albert & 59.89 & 125.15 & 207.66 & 366.44 & 444.65 \\ 
+        \hline
+    \end{tabular}
+\end{table}
+
+he results presented in the tables allow for a clear comparison of the datasets. The Barabási-Albert graphs exhibited the greatest average depth in the DFS exploration and the second highest number of leaf nodes, indicating their complexity. Notably, they were also the most affected by the contraction process, resulting in a significant reduction in node count. In contrast, the Random Trees dataset had the least depth and the highest average number of leaf nodes, showcasing its broader structure. Perfect Mazes, while exhibiting moderate depth and leaf nodes, did not undergo contraction, preserving their original node counts for valid metric comparisons.
 
 The analysis focuses on datasets and sizes that yield significant results, while all generated graphs can be found in the appendix.
 
@@ -19,17 +81,19 @@ The analysis focuses on datasets and sizes that yield significant results, while
 \subsection{Metrics for Analysis}
 \label{subsection_no_comm_metrics}
 
-This section focuses on the results for the no-communication algorithms, which include the proposed algorithm, its Backward Interval Filling variant, and Tarry's algorithm for comparison. Although Tarry's algorithm involves communication, it serves as a baseline to assess the efficiency of the no-communication strategies.
+This section focuses on the results for the zero-communication algorithms, which include the basic distributed search algorithm and its Backward Interval Filling variant. Tarry's algorithm is also included for comparison, despite involving communication. The reason for this choice is that zero-communication algorithms provide a lower limit for assessing the efficiency of any distributed search algorithm employing communication, and we aim to compare them with a communication-based approach like Tarry's.
 
 
-The metrics used in this comparison are:
+The metrics used in this comparison are the same as those from \citen{Kivelevitch2010}:
 
 \begin{itemize}
     \item Steps Taken by the Pioneer: This measures the number of steps needed by the first agent to find the goal, serving as a key indicator of exploration efficiency.
-    \item Fraction Explored Before the Pioneer Found the Goal: This indicates the proportion of the graph covered by the agents before the goal was reached, providing insight into how well the agents dispersed during exploration.
+    \item Fraction Explored Before the Pioneer Found the Goal: This indicates the proportion of the graph explored by the agents when the goal is reached, providing insight into how well the agents dispersed during exploration.
 \end{itemize}
     
 These metrics together give a clear view of the algorithm's efficiency and how exploration patterns vary across different graph structures and sizes.
+
+Note that our experiments did not consider collisions between agents, meaning any number of agents may occupy the same node at the same time. This assumption simplifies the model, allowing us to concentrate on evaluating the exploration strategies of the algorithms.
 
 \subsection{Perfect Maze Results} 
 \label{subsection_no_comm_maze_results}
@@ -39,76 +103,51 @@ The results for all maze sizes (10x10, 20x20, 30x30, and 40x40) are presented in
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{Cap3/no_comm_steps_legend.pdf}
-    \vspace{1em}
-    \begin{minipage}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Cap3/no_comm_steps__10_by_10_maze.pdf}
-        \caption{(a) 10x10 Maze}
-        \label{fig_no_comm_steps_10x10_maze}
-    \end{minipage}
-    \hfill
-    \begin{minipage}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Cap3/no_comm_steps__20_by_20_maze.pdf}
-        \caption{(b) 20x20 Maze}
-        \label{fig_no_comm_steps_20x20_maze}
-    \end{minipage}
-    \vspace{1em}
-    \begin{minipage}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Cap3/no_comm_steps__30_by_30_maze.pdf}
-        \caption{(c) 30x30 Maze}
-        \label{fig_no_comm_steps_30x30_maze}
-    \end{minipage}
-    \hfill
-    \begin{minipage}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Cap3/no_comm_steps__40_by_40_maze.pdf}
-        \caption{(d) 40x40 Maze}
-        \label{fig_no_comm_steps_40x40_maze}
-    \end{minipage}
-    \caption{Comparison of the pioneer's average steps between our no-communication algorithms and the Tarry's algorithm across different sizes of perfect mazes. The subfigures illustrate how algorithm performance scales with maze size: (a) 10x10, (b) 20x20, (c) 30x30, and (d) 40x40.}
+    \qquad
+    \qquad
+    \subfloat[\centering Legend]
+    {{\includegraphics[width=0.5\textwidth]{Cap3/no_comm_steps_legend.pdf} }}
+    \newline
+    \subfloat[\centering 10x10 Maze]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_steps__10_by_10_maze.pdf} }}
+    \qquad
+    \subfloat[\centering 20x20 Maze]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_steps__20_by_20_maze.pdf} }}
+    \newline
+    \subfloat[\centering 30x30 Maze]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_steps__30_by_30_maze.pdf} }}
+    \qquad
+    \subfloat[\centering 40x40 Maze]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_steps__40_by_40_maze.pdf} }}
+    \caption{Comparison of the pioneer's average steps between our no-communication algorithms and Tarry's algorithm across different sizes of perfect mazes. The subfigures illustrate how algorithm performance scales with maze size.}
     \label{fig_no_comm_steps_all_sizes_maze}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{Cap3/no_comm_fraction_legend.pdf}
-    \vspace{1em}
-    \begin{minipage}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Cap3/no_comm_fraction__10_by_10_maze.pdf}
-        \caption{(a) 10x10 Maze}
-        \label{fig_no_comm_fraction_10x10_maze}
-    \end{minipage}
-    \hfill
-    \begin{minipage}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Cap3/no_comm_fraction__20_by_20_maze.pdf}
-        \caption{(b) 20x20 Maze}
-        \label{fig_no_comm_fraction_20x20_maze}
-    \end{minipage}
-    \vspace{1em}
-    \begin{minipage}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Cap3/no_comm_fraction__30_by_30_maze.pdf}
-        \caption{(c) 30x30 Maze}
-        \label{fig_no_comm_fraction_30x30_maze}
-    \end{minipage}
-    \hfill
-    \begin{minipage}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Cap3/no_comm_fraction__40_by_40_maze.pdf}
-        \caption{(d) 40x40 Maze}
-        \label{fig_no_comm_fraction_40x40_maze}
-    \end{minipage}
-    \caption{Comparison of the explored fraction achieved by our no-communication algorithms and Tarry's algorithm across different sizes of perfect mazes. The subfigures illustrate how coverage efficiency scales with maze size: (a) 10x10, (b) 20x20, (c) 30x30, and (d) 40x40.}
+    \qquad
+    \qquad
+    \subfloat[\centering Legend]
+    {{\includegraphics[width=0.5\linewidth]{Cap3/no_comm_steps_legend.pdf} }}
+    \newline
+    \subfloat[\centering 10x10 Maze]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_fraction__10_by_10_maze.pdf} }}
+    \qquad
+    \subfloat[\centering 20x20 Maze]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_fraction__20_by_20_maze.pdf} }}
+    \newline
+    \subfloat[\centering 30x30 Maze]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_fraction__30_by_30_maze.pdf} }}
+    \qquad
+    \subfloat[\centering 40x40 Maze]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_fraction__40_by_40_maze.pdf} }}
+    \caption{Comparison of the explored fraction achieved by our no-communication algorithms and Tarry's algorithm across different sizes of perfect mazes. The subfigures illustrate how coverage efficiency scales with maze size.}
     \label{fig_no_comm_fraction_all_sizes_maze}
 \end{figure}
 
+As this dataset was also used by Rodrigues (2024), and the results shown in Figures \ref{fig_no_comm_steps_all_sizes_maze} and \ref{fig_no_comm_fraction_all_sizes_maze} match his, they confirm the correctness of our new implementation.
 
-The results show that adding more agents helps the pioneer find the goal cell faster, as the average number of steps taken decreases with more agents. This trend eventually levels off at a certain point when there are many agents. The explored fraction behaves similarly, with more agents spreading out quickly and covering more of the maze, though it also stabilizes over time. This outcome is expected, as more agents lead to quicker exploration and better coverage.
+The results show that adding more agents helps the pioneer find the goal cell faster, as the average number of steps taken decreases with more agents. This trend eventually levels off at a certain point when there are many agents. The explored fraction behaves similarly, with more agents spreading out quickly and covering more of the maze, though it also stabilizes after a certain number of agents. This outcome is expected, as more agents lead to quicker exploration and better coverage.
 
 In addition to the expected results, the Backward Interval Filling algorithm shows a strange pattern when the number of agents is a power of two, starting from the 20x20 maze size. This matches earlier findings in \cite{Arthur2023}, but it hasn't been fully explored in previous studies. While we recognize the theory suggested by \citen{Arthur2023}, we did not investigate this behavior in detail in our research.
 
@@ -117,40 +156,70 @@ Building on these findings, we compared the performance of our no-communication 
 \subsection{Random Tree Results} 
 \label{subsection_no_comm_random_tree_results}
 
-The results for the random trees of sizes 100, 500, and 1500 nodes are presented in Figure \ref{fig_no_comm_steps_all_sizes_tree}. These sizes were chosen because they effectively represent the trends observed across all tree dimensions without the need to include every possible size. Figure \ref{fig_no_comm_steps_all_sizes_tree} shows the steps taken by the pioneer, while the explored fraction is not displayed due to its high variability in trees, which could lead to misleading conclusions.
+The results for the random trees of sizes 100, 500, and 1500 nodes are presented in Figure \ref{fig_no_comm_steps_all_sizes_tree}. These sizes were chosen because they effectively represent the trends observed for the metrics without needing to include every possible size. Figure \ref{fig_no_comm_steps_all_sizes_tree} shows the steps taken by the pioneer, while the Figure \ref{fig_no_comm_fraction_all_sizes_tree} shows the explored fraction.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{Cap3/no_comm_steps_legend.pdf}
-    \vspace{1em}
-    \begin{minipage}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Cap3/no_comm_steps__100_tree.pdf}
-        \caption{(a) 100-node Tree}
-        \label{fig_no_comm_steps_100_tree}
-    \end{minipage}
-    \hfill
-    \begin{minipage}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Cap3/no_comm_steps__500_tree.pdf}
-        \caption{(b) 500-node Tree}
-        \label{fig_no_comm_steps_500_tree}
-    \end{minipage}
-    \vspace{1em}
-    \begin{minipage}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{Cap3/no_comm_steps__1500_tree.pdf}
-        \caption{(c) 1500-node Tree}
-        \label{fig_no_comm_steps_1500_tree}
-    \end{minipage}
-    \caption{Comparison of the average steps taken by the pioneer across different no-communication algorithms and Tarry's algorithm for various sizes of random trees. The subfigures illustrate how algorithm performance varies with tree size: (a) 100 nodes, (b) 500 nodes, and (c) 1500 nodes.}
+    \qquad
+    \qquad
+    \subfloat[\centering Legend]
+    {{\includegraphics[width=0.5\linewidth]{Cap3/no_comm_steps_legend.pdf} }}
+    \newline
+    \subfloat[\centering 100-node Tree]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_steps__100_tree.pdf} }}
+    \qquad
+    \subfloat[\centering 500-node Tree]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_steps__500_tree.pdf} }}
+    \newline
+    \subfloat[\centering 1500-node Tree]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_steps__1500_tree.pdf} }}
+    \caption{Comparison of the average steps taken by the pioneer across different no-communication algorithms and Tarry's algorithm for various sizes of random trees. The subfigures illustrate how algorithm performance varies with tree sizes.}
     \label{fig_no_comm_steps_all_sizes_tree}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \qquad
+    \qquad
+    \subfloat[\centering Legend]
+    {{\includegraphics[width=0.5\linewidth]{Cap3/no_comm_steps_legend.pdf} }}
+    \newline
+    \subfloat[\centering 100-node Tree]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_fraction__100_tree.pdf} }}
+    \qquad
+    \subfloat[\centering 500-node Tree]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_fraction__500_tree.pdf} }}
+    \newline
+    \subfloat[\centering 1500-node Tree]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_fraction__1500_tree.pdf} }}
+    \caption{Comparison of the explored fraction achieved by the pioneer across different no-communication algorithms and Tarry's algorithm for various sizes of random trees. The subfigures illustrate how coverage efficiency varies with tree sizes.}
+    \label{fig_no_comm_fraction_all_sizes_tree}
 \end{figure}
 
 The results for the random trees confirm that the conclusions from Section \ref{subsection_no_comm_maze_results} still apply. Performance improves with more agents, Tarry's algorithm remains the most efficient, and its advantages increase with size.
 
 Even though the trends hold, it's important to note that Tarry outperforms the Back Filling Interval Variation by approximately 39.6\% and our proposed algorithm by 47.3\% in the 40x40 maze. In contrast, in the 1500-node trees, Tarry shows a substantial improvement, being about 81.7\% better than our proposed algorithm and 80.8\% better than the Back Filling Interval Variation. This demonstrates the significant impact of dataset characteristics on the relative performance of our no-communication algorithms.
 
+Referring to Figure \ref{fig_no_comm_fraction_all_sizes_tree}, the results differ from expectations, as the plots are noisy and don't show a clear pattern where Tarry's algorithm consistently explores a larger fraction. Previously, the explored fraction increased with the number of agents, but that trend isn't evident here, as all the algorithms are around the same values with little difference regardless of the number of agents.
+
+This difference arises from the dataset characteristics. In deep trees like perfect mazes, agents must explore down to the leaf nodes to find the goal, setting a lower limit on the number of steps. In shallower trees like random trees, agents can quickly reach leaf nodes, potentially finding the goal earlier regardless of agent count.
+
+As a result, some cases show a very small explored fraction, while others have a higher one, leading to noisy averages. For example, considering Tarry's with 1500 nodes and 20 agents, the explored fraction averaged 49.21\% with a standard deviation of 30.07\%, highlighting this variability. The histogram in Figure \ref{fig_no_comm_fraction_histogram_tree} illustrates this spread.
+
+\begin{figure}[H]
+    \centering 
+    \includegraphics[width=0.7\textwidth]{Cap3/no_comm_fraction_histogram_tree.pdf} 
+    \caption{Histogram of explored fractions for random trees with 1500 nodes and 20 agents using Tarry's Algorithm.} 
+    \label{fig_no_comm_fraction_histogram_tree}
+\end{figure}
+
+As expected, Figure \ref{fig_no_comm_fraction_histogram_tree} shows a fairly uniform distribution in the explored fractions, reflecting the characteristics of the random trees.
+
+\subsection{Barabási-Albert Results} 
+\label{subsection_no_comm_barabasi_albert_results}
+
+% TODO ADD RESULTS
+% TODO EXPLAIN RESULTS
 
 \section{Tarry's Variants Performance}
 \label{section_result_tarry}
@@ -165,12 +234,152 @@ In addition to the previously mentioned metrics in Section \ref{subsection_no_co
 \subsection{Perfect Maze Results} 
 \label{subsection_tarry_maze_results}
 
+The results for all maze sizes (10x10, 20x20, 30x30, and 40x40) are presented in Figures \ref{fig_tarry_steps_all_sizes_maze}, \ref{fig_tarry_fraction_all_sizes_maze}, and \ref{fig_tarry_steps_relative_all_sizes_maze}, demonstrating the performance of Tarry's algorithm and its variations across different maze dimensions. Figure \ref{fig_tarry_steps_all_sizes_maze} illustrates the number of steps taken by the algorithms, while Figure \ref{fig_tarry_fraction_all_sizes_maze} displays the fraction of the maze explored before reaching the goal, providing insights into exploration efficiency and coverage across maze sizes. Additionally, Figure \ref{fig_tarry_steps_relative_all_sizes_maze} presents the relative difference in pioneer steps compared to the original Tarry's algorithm, helping to better compare the variations, which may show similar behaviors.
+
+\begin{figure}[H]
+    \centering
+    \qquad
+    \qquad
+    \subfloat[\centering Legend]
+    {{\includegraphics[width=0.5\textwidth]{Cap3/no_comm_steps_legend.pdf} }}
+    \newline
+    \subfloat[\centering 10x10 Maze]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__10_by_10_maze.pdf} }}
+    \qquad
+    \subfloat[\centering 20x20 Maze]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__20_by_20_maze.pdf} }}
+    \newline
+    \subfloat[\centering 30x30 Maze]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__30_by_30_maze.pdf} }}
+    \qquad
+    \subfloat[\centering 40x40 Maze]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__40_by_40_maze.pdf} }}
+    \caption{Comparison of the pioneer's average steps across Tarry's algorithm and its variations for different sizes of perfect mazes. The subfigures illustrate how algorithm performance changes with maze size.}
+    \label{fig_tarry_steps_all_sizes_maze}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \qquad
+    \qquad
+    \subfloat[\centering Legend]
+    {{\includegraphics[width=0.5\textwidth]{Cap3/tarry_var_steps_legend_relative.pdf} }}
+    \newline
+    \subfloat[\centering 10x10 Maze]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__10_by_10_maze_relative.pdf} }}
+    \qquad
+    \subfloat[\centering 20x20 Maze]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__20_by_20_maze_relative.pdf} }}
+    \newline
+    \subfloat[\centering 30x30 Maze]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__30_by_30_maze_relative.pdf} }}
+    \qquad
+    \subfloat[\centering 40x40 Maze]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__40_by_40_maze_relative.pdf} }}
+    \caption{Relative difference in pioneer steps between Tarry's algorithm variants and the original Tarry's algorithm, across different sizes of perfect mazes. The subfigures illustrate how the relative performance changes with maze size.}
+    \label{fig_tarry_steps_relative_all_sizes_maze}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \qquad
+    \qquad
+    \subfloat[\centering Legend]
+    {{\includegraphics[width=0.5\textwidth]{Cap3/tarry_var_fraction_legend.pdf} }}
+    \newline
+    \subfloat[\centering 10x10 Maze]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_fraction__10_by_10_maze.pdf} }}
+    \qquad
+    \subfloat[\centering 20x20 Maze]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_fraction__20_by_20_maze.pdf} }}
+    \newline
+    \subfloat[\centering 30x30 Maze]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_fraction__30_by_30_maze.pdf} }}
+    \qquad
+    \subfloat[\centering 40x40 Maze]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_fraction__40_by_40_maze.pdf} }}
+    \caption{Comparison of the explored fraction across Tarry's algorithm and its variations for different sizes of perfect mazes. The subfigures illustrate how the explored fraction changes with maze size.}
+    \label{fig_tarry_fraction_all_sizes_maze}
+\end{figure}
+ 
+When analyzing Figures \ref{fig_tarry_steps_all_sizes_maze} and \ref{fig_tarry_steps_relative_all_sizes_maze}, it becomes evident that there is no uniform trend across all maze sizes. The Tarry Tie-Breaker and Delayed Tarry variations consistently outperform the standard Tarry algorithm, except in cases with a small number of agents. In those cases, early variations in exploration paths can significantly affect the outcome due to the extensive search required by each agent. However, a more intriguing behavior is observed with the Tarry Interval Priority variation. Although it performs similarly but slightly worse for smaller maze sizes, its performance improves for the largest maze analyzed. This behavior can be attributed to the benefits of dispersion and the additional information obtained through interval filling, which only becomes significant during more extensive exploration. In mazes with considerable depth and narrow width, interval filling initially causes conflicts, as agents may search for the start of their intervals in branches that have already been visited by others. This leads to delays as they look for their designated interval elsewhere. However, in larger mazes, these initial setbacks are offset by the advantages gained through the extra information during deeper exploration, which cannot be easily matched by Tarry's random choices.
+
+% TODO CONFERIR EXPLICACAO
+An interesting observation can also be made regarding the explored fraction, as shown in Figure \ref{fig_tarry_fraction_all_sizes_maze}. The results indicate that the Tarry Interval Priority algorithm consistently explores a smaller portion of the graph compared to the other variations. Since mazes have few leaf nodes and communication prevents agents from overlapping in explored branches, the use of intervals likely directs agents more efficiently toward unexplored areas, potentially allowing them to head directly to leaf nodes before finding the actual solution.
+
+
 \subsection{Random Tree Results} 
 \label{subsection_tarry_random_tree_results}
 
 
-    
-    
+The results for the random trees, using the same sizes as in Section \ref{subsection_no_comm_random_tree_results}, are presented in Figures \ref{fig_tarry_steps_all_sizes_tree}, \ref{fig_tarry_fraction_all_sizes_tree}, and \ref{fig_tarry_steps_relative_all_sizes_tree}.
+
+\begin{figure}[H]
+    \centering
+    \qquad
+    \qquad
+    \subfloat[\centering Legend] 
+    {{\includegraphics[width=0.5\textwidth]{Cap3/tarry_var_steps_legend.pdf} }}
+    \newline
+    \subfloat[\centering 100-node Tree]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__100_tree.pdf} }}
+    \qquad
+    \subfloat[\centering 500-node Tree]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__500_tree.pdf} }}
+    \newline
+    \subfloat[\centering 1500-node Tree]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__1500_tree.pdf} }} 
+    \caption{Comparison of the pioneer's average steps across Tarry's algorithm and its variations for different sizes of random trees. The subfigures illustrate how algorithm performance changes with tree size.} 
+    \label{fig_tarry_steps_all_sizes_tree} 
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \qquad
+    \qquad
+    \subfloat[\centering Legend]
+    {{\includegraphics[width=0.5\textwidth]{Cap3/tarry_var_steps_legend_relative.pdf} }}
+    \newline
+    \subfloat[\centering 100-node Tree]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__100_tree_relative.pdf} }}
+    \qquad 
+    \subfloat[\centering 500-node Tree]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__500_tree_relative.pdf} }}
+    \newline
+    \subfloat[\centering 1500-node Tree]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__1500_tree_relative.pdf} }} 
+    \caption{Relative difference in pioneer steps between Tarry's algorithm variants and the original Tarry's algorithm across different sizes of random trees. The subfigures illustrate how the relative performance changes with tree size.} 
+    \label{fig_tarry_steps_relative_all_sizes_tree}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \qquad
+    \qquad
+    \subfloat[\centering Legend]
+    {{\includegraphics[width=0.5\textwidth]{Cap3/tarry_var_fraction_legend.pdf} }} 
+    \newline 
+    \subfloat[\centering 100-node Tree]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_fraction__100_tree.pdf} }}
+    \qquad
+    \subfloat[\centering 500-node Tree]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_fraction__500_tree.pdf} }}
+    \newline 
+    \subfloat[\centering 1500-node Tree]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_fraction__1500_tree.pdf} }}
+    \caption{Comparison of the explored fraction across Tarry's algorithm and its variations for different sizes of random trees. The subfigures illustrate how the explored fraction changes with tree size.} 
+    \label{fig_tarry_fraction_all_sizes_tree} 
+\end{figure}
+
+According to Figures \ref{fig_tarry_steps_all_sizes_tree} and \ref{fig_tarry_steps_relative_all_sizes_tree}, the results show a distinct pattern compared to those observed in Section \ref{subsection_tarry_maze_results}. The Tarry Interval Priority variation consistently underperforms across all tree sizes, with the disparity becoming even more pronounced when the number of agents is small. This outcome is likely due to the wide structure of the trees, where each agent in this variation needs to explore many leaf nodes within its assigned interval, resulting in inefficiencies. In contrast, only the Tarry Tie-Breaker variation shows comparable or occasionally better performance than the baseline Tarry algorithm.% TODO EXPLAIN
+
+When examining Figure \ref{fig_tarry_fraction_all_sizes_tree}, a similar behavior to what was previously discussed in Figure \ref{fig_no_comm_fraction_all_sizes_tree} can be observed. The explored fraction displays a pattern that is largely independent of the strategy used, due to the high variability in the fraction of nodes explored across different tree instances.
+
+\subsection{Barabási-Albert Results} 
+\label{subsection_tarry_barabasi_albert_results}
+
+% TODO ADD RESULTS
+% TODO EXPLAIN RESULTS
     
     
     

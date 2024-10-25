@@ -302,7 +302,7 @@ incorporating modifications to handle previously visited nodes and potential cyc
             
         \end{itemize}
         \item Each adjacent node is then added to the agent's tree along with the corresponding edge and its assigned interval. 
-        \item When adding a node, called the target node, to the tree in generic graphs, a cycle may be detected if the target node has not been visited yet but already appears in the tree. In this case, the new edge would form a return edge, as identified by Tarjan's Algorithm. To prevent cycles, the previous occurrence of the target node is removed from the tree, and it is then re-added with its updated edge and interval, ensuring a valid acyclic structure for the exploration tree. In Figure \ref{fig_agent_3_tree}, an example of this situation is shown, where the target node was not actually removed but was instead renamed to allow visualization of the cycle occurrence.
+        \item When adding a node, called the target node, to the tree in generic graphs, a cycle may be detected if the target node has not been visited yet but already appears in the tree. In this case, the new edge would form a return edge, as identified by Tarjan's Algorithm. To prevent cycles, the previous occurrence of the target node is removed from the tree, and it is then re-added with its updated edge and interval, ensuring a valid acyclic structure for the exploration tree. In Figure \ref{fig_agent_3_tree}, an example of this situation is shown. The target node was correctly removed from the agent's tree, but for demonstration purposes, a copy of the tree was created, and the target node was re-added with a modified identifier (appending "\_0" to its ID) to illustrate the cycle occurrence. That figure is based on this modified tree, not the original agent's tree.
         \item The agent then chooses the first node whose convergence interval intersects with its own. If no such node exists or if all adjacent nodes have been visited, the current node is marked as explored, and the agent backtracks to the parent node.
     \end{itemize}
     \item \textbf{Completion Criteria}
@@ -471,7 +471,7 @@ In this work, we have explored five alternatives: one variation of our core algo
 \subsubsection{Backward Interval Filling}
 \label{section_backward_interval}
 
-The \textbf{Backward Interval Filling} algorithm extends the primary zero-communication strategy developed in this work. Instead of initiating a new Depth-First Search (DFS) traversal after completing a designated interval, agents continue exploring by filling the next interval in reverse order. Once an interval is finished, the agent moves up to the nearest common ancestor shared with the start of the next interval, then proceeds to explore downwards. This modification ensures that agents remain active, even after finishing their primary interval, enhancing the overall graph coverage and reducing idle time.
+The \textbf{Backward Interval Filling} algorithm extends the primary zero-communication strategy developed in this work. Instead of initiating a new Depth-First Search (DFS) traversal after completing a designated interval, agents continue exploring by filling the next interval in reverse order. Next interval refers to the interval initially assigned to the following agent, and for the last agent, this interval loops back to that of the first agent. Thus, once the agent finishes exploring its original interval, it moves up on its tree to the nearest common ancestor shared with the end of the next interval, then proceeds to explore downwards. This variation ensures that agents remain active even after completing their primary interval, enhancing overall graph coverage and reducing idle time. It takes advantage of the fact that the tree may be unbalanced; when one interval contains significantly fewer nodes than the next, the agent assigned to the smaller interval can finish quickly and then explore the larger interval from the opposite direction.
 
 \subsection{Exploration Strategies with Communication: Tarry Algorithm Variations}
 
@@ -489,9 +489,9 @@ The \textbf{Extended Tarry Algorithm}, proposed by \citen{Kivelevitch2010}, is a
     \item \textbf{Cooperative Backtracking Phase}:Once an agent finds the goal and is defined as the pioneer, other agents backtrack to the Last Common Location (LCL) with it and follow the pioneer's path to the goal.
 \end{itemize}
 
-The functions $define\_next\_first\_phase\_tarry\_step$ and $define\_next$
+The functions $define\_next\_first\_phase\_tarry\_step$ and 
 
-$\_second\_phase\_tarry\_step$, as shown in Algorithms \ref{alg:define_agent_next_first_phase_step} and \ref{alg:define_agent_next_second_phase_step}, implement this logic.
+$define\_next\_second\_phase\_tarry\_step$, as shown in Algorithms \ref{alg:define_agent_next_first_phase_step} and \ref{alg:define_agent_next_second_phase_step}, implement this logic.
 
 \begin{algorithm}
 \caption{\textbf{Agent} - define\_next\_first\_phase\_tarry\_step()}
@@ -611,4 +611,9 @@ show the trees constructed by the 3 agents for the exploration displayed in Figu
 \label{fig_agent_3_tree}
 \end{figure}
     
-These visualizations reveal how each agent independently constructs its own representation of the graph, adapting to imperfections and resulting in different exploration paths. For instance, Figure \ref{fig_agent_3_tree} shows a cycle occurrence, demonstrating how cycles can appear during exploration. Although cycles are detected, they are disregarded in the actual traversal.
+
+These visualizations illustrate how each agent independently builds its representation of the graph, adapting to imperfections and leading to varied exploration paths. In Figure \ref{fig_agent_3_tree}, the highlighted nodes, $(3, 4)$ and $(3, 4)_0$, demonstrate how cycles can occur during exploration.
+
+Initially, node $(3, 4)$ was added to the tree when the agent discovered it while exploring the neighbors of node $(4, 4)$, even though it hadn't been visited yet. Later, as the exploration progressed, the agent reached node $(3, 4)$ while checking the neighbors of node $(3, 3)$, revealing a cycle. According to the method outlined in Section \ref{section_method_algorithm}, the original node $(3, 4)$ was removed from the agent's tree to maintain an acyclic structure. For demonstration purposes, a copy of the tree was created, and node $(3, 4)$ was re-added with a modified identifier (appending "\_0" to its ID) to visualize this occurrence.
+
+Finally, when node $(3, 4)$ was reached again while exploring the neighbors of node $(2, 4)$, the agent again removed it from its tree and added it as a child of node $(2, 4)$. This step-by-step process clarifies the presence of node $(3, 4)_0$ in the figure, along with the edges connecting it to nodes $(4, 4)$ and $(3, 3)$, and the edge from node $(2, 4)$ indicating when node $(3, 4)$ was finally explored.
