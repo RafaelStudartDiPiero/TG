@@ -7,8 +7,8 @@ This section describes the datasets used to evaluate the performance of the algo
 
 \begin{itemize} 
     \item Perfect Mazes: The dataset of perfect mazes \cite{Naeem2021} is the same as the one used by \citen{Arthur2023} and includes 250 mazes for each of four sizes: 10x10, 20x20, 30x30, and 40x40.
-    \item Random Trees: The dataset of random trees was generated using the $random\_$ $unlabeled\_tree$ method from NetworkX \cite{Hagberg2008}. This function generates an unlabeled tree uniformly at random using Wilf's algorithm \cite{Wilf1981}, resulting in 250 trees for sizes: 100, 250, 500, 1000, and 1500 nodes. The goal node was chosen by randomly selecting one of the leaf nodes.Compared to the perfect mazes, these trees tend to be less deep and broader.
-    \item Barabási-Albert Graphs: The dataset of Barabási-Albert graphs was generated using the dual Barabási-Albert preferential attachment method \cite{Moshiri2018} from NetworkX, specifically $dual\_barabasi\_albert\_graph$ function. This method constructs a random graph by incrementally adding new nodes that connect to existing nodes with a higher degree \cite{Barabasi1999}. For this dataset, multiple graphs were generated with parameters configured to attach 2 and 3 edges from each new node, with a probability of 0.2. This approach results in networks that exhibit a power-law degree distribution, distinguishing them from the other datasets. The dataset includes graphs of sizes 100, 250, 500, 1000, and 1500 nodes.
+    \item Random Trees: The dataset of random trees was generated using the $random\_$ $unlabeled\_tree$ method from NetworkX \cite{Hagberg2008}. This function generates an unlabeled tree uniformly at random using Wilf's algorithm \cite{Wilf1981}, resulting in 250 trees for sizes: 100, 250, 500, 1000, and 1500 nodes. The goal node was chosen by randomly selecting one of the leaf nodes. Compared to the perfect mazes, these trees tend to be less deep and broader.
+    \item Barabási-Albert Graphs: The dataset of Barabási-Albert graphs was generated using the dual Barabási-Albert preferential attachment method \cite{Moshiri2018} from NetworkX, specifically $dual\_barabasi\_albert\_graph$ function. This method constructs a random graph by incrementally adding new nodes that connect to existing nodes with a higher degree \cite{Barabasi1999}. For this dual approach, at each step of edge addition for a new node, it can be chosen whether the node will connect with either $n_1$ or $n_2$ edges, determined by a probability $p$ for $n_1$ and $1-p$ for $n_2$. In our case, $n_1$ is 2, $n_2$ is 3, and $p$ is set to 0.2. This approach results in networks that exhibit a power-law degree distribution, distinguishing them from the other datasets. The dataset includes graphs of sizes 100, 250, 500, 1000, and 1500 nodes.
 \end{itemize}
 
 The sizes were chosen to approximately match the maze sizes used in \citen{Arthur2023} and to ensure that the computational demands for running all experiments remained manageable. For example, a 40x40 maze has 1600 cells, so graph sizes such as 1500 nodes were selected to provide a comparable level of complexity while keeping the analysis feasible across multiple runs.
@@ -93,8 +93,6 @@ The metrics used in this comparison are the same as those from \citen{Kivelevitc
     
 These metrics together give a clear view of the algorithm's efficiency and how exploration patterns vary across different graph structures and sizes.
 
-Note that our experiments did not consider collisions between agents, meaning any number of agents may occupy the same node at the same time. This assumption simplifies the model, allowing us to concentrate on evaluating the exploration strategies of the algorithms.
-
 \subsection{Perfect Maze Results} 
 \label{subsection_no_comm_maze_results}
 
@@ -151,7 +149,7 @@ The results show that adding more agents helps the pioneer find the goal cell fa
 
 In addition to the expected results, the Backward Interval Filling algorithm shows a strange pattern when the number of agents is a power of two, starting from the 20x20 maze size. This matches earlier findings in \cite{Arthur2023}, but it hasn't been fully explored in previous studies. While we recognize the theory suggested by \citen{Arthur2023}, we did not investigate this behavior in detail in our research.
 
-Building on these findings, we compared the performance of our no-communication algorithms with Tarry's algorithm. As expected, both Tarry's algorithm and the Backward Interval Filling variant perform better than the basic version of our algorithm. However, the level of improvement depends on the maze size. In larger mazes, Tarry's algorithm shows a bigger advantage. This is because, in smaller mazes, it's possible to quickly find the optimal solution by simply adding more agents. But in larger mazes, communication is crucial for avoiding repeated steps, which significantly enhances Tarry's performance.
+Building on these findings, we compared the performance of our no-communication algorithms with Tarry's algorithm. As expected, both Tarry's algorithm and the Backward Interval Filling variant perform better than the basic version of our algorithm. However, the level of improvement depends on the maze size. In larger mazes, Tarry's algorithm shows a bigger advantage. We conjecture that in smaller mazes, it's possible to quickly find the optimal solution by simply adding more agents. But in larger mazes, communication is crucial for avoiding repeated steps, which we assume significantly enhances Tarry's performance.
 
 \subsection{Random Tree Results} 
 \label{subsection_no_comm_random_tree_results}
@@ -202,9 +200,9 @@ Even though the trends hold, it's important to note that Tarry outperforms the B
 
 Referring to Figure \ref{fig_no_comm_fraction_all_sizes_tree}, the results differ from expectations, as the plots are noisy and don't show a clear pattern where Tarry's algorithm consistently explores a larger fraction. Previously, the explored fraction increased with the number of agents, but that trend isn't evident here, as all the algorithms are around the same values with little difference regardless of the number of agents.
 
-This difference arises from the dataset characteristics. In deep trees like perfect mazes, agents must explore down to the leaf nodes to find the goal, setting a lower limit on the number of steps. In shallower trees like random trees, agents can quickly reach leaf nodes, potentially finding the goal earlier regardless of agent count.
+This difference arises from the dataset characteristics. In deep trees like Perfect Mazes, agents must explore down to the leaf nodes to find the goal, setting a lower limit on the number of steps. In shallower trees like Random Trees, agents can quickly reach leaf nodes, potentially finding the goal earlier regardless of agent count.
 
-As a result, some cases show a very small explored fraction, while others have a higher one, leading to noisy averages. For example, considering Tarry's with 1500 nodes and 20 agents, the explored fraction averaged 49.21\% with a standard deviation of 30.07\%, highlighting this variability. The histogram in Figure \ref{fig_no_comm_fraction_histogram_tree} illustrates this spread.
+As a result, some instances show a very small explored fraction, while others have a higher one, leading to noisy averages. For example, considering Tarry's with 1500 nodes and 20 agents, the explored fraction averaged 49.21\% with a standard deviation of 30.07\%, highlighting this variability. This large spread means this metric is not very relevant for this kind of dataset. On the other hand, zero-communication algorithms do not incur on any loss with respect to this metric.
 
 \begin{figure}[H]
     \centering 
@@ -218,8 +216,55 @@ As expected, Figure \ref{fig_no_comm_fraction_histogram_tree} shows a fairly uni
 \subsection{Barabási-Albert Results} 
 \label{subsection_no_comm_barabasi_albert_results}
 
-% TODO ADD RESULTS
-% TODO EXPLAIN RESULTS
+The results for the Barabási-Albert graphs with 100, 250, 500, and 1000 nodes are shown in Figures \ref{fig_no_comm_steps_all_sizes_barabasi} and \ref{fig_no_comm_fraction_all_sizes_barabasi}. These sizes were selected to capture the overall trends in exploration efficiency while accounting for computational constraints on larger Barabási-Albert graphs. Notably, for the 1000-node graph, the maximum number of agents was limited to 30 instead of the standard 40 due to performance considerations. Figure \ref{fig_no_comm_steps_all_sizes_barabasi} illustrates the average steps taken by the pioneer, while Figure \ref{fig_no_comm_fraction_all_sizes_barabasi} displays the explored fraction achieved.
+
+\begin{figure}[H]
+    \centering
+    \qquad
+    \qquad
+    \subfloat[\centering Legend]
+    {{\includegraphics[width=0.5\linewidth]{Cap3/no_comm_steps_legend.pdf} }}
+    \newline
+    \subfloat[\centering 100-node Barabási-Albert]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_steps__100_barabasi.pdf} }}
+    \qquad
+    \subfloat[\centering 250-node Barabási-Albert]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_steps__250_barabasi.pdf} }}
+    \newline
+    \subfloat[\centering 500-node Barabási-Albert]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_steps__500_barabasi.pdf} }}
+    \qquad
+    \subfloat[\centering 1000-node Barabási-Albert]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_steps__1000_barabasi.pdf} }}
+    \caption{Comparison of the average steps taken by the pioneer across different no-communication algorithms and Tarry's algorithm for various sizes of Barabási-Albert graphs. The subfigures illustrate how algorithm performance varies with graph sizes.}
+    \label{fig_no_comm_steps_all_sizes_barabasi}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \qquad
+    \qquad
+    \subfloat[\centering Legend]
+    {{\includegraphics[width=0.5\linewidth]{Cap3/no_comm_steps_legend.pdf} }}
+    \newline
+    \subfloat[\centering 100-node Barabási-Albert]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_fraction__100_barabasi.pdf} }}
+    \qquad
+    \subfloat[\centering 250-node Barabási-Albert]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_fraction__250_barabasi.pdf} }}
+    \newline
+    \subfloat[\centering 500-node Barabási-Albert]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_fraction__500_barabasi.pdf} }}
+    \qquad
+    \subfloat[\centering 1000-node Barabási-Albert]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_fraction__1000_barabasi.pdf} }}
+    \caption{Comparison of the explored fraction achieved by the pioneer across different no-communication algorithms and Tarry's algorithm for various sizes of Barabási-Albert graphs. The subfigures illustrate how coverage efficiency varies with graph sizes.}
+    \label{fig_no_comm_fraction_all_sizes_barabasi}
+\end{figure}
+
+As expected, performance improves with more agents, and Tarry's algorithm remains the most effective approach. However, for this dataset, the Backward Interval Filling algorithm shows no improvement over the basic exploration algorithm. We suspect this is because the Barabási-Albert graphs are highly connected and contain many cycles, leading each agent to form a distinct exploration tree. The same nodes often have significantly different intervals based on the paths taken by each agent. Consequently, each agent completes its initial interval and often reaches the goal before starting a second one.
+
+Unlike the trend observed in Section \ref{subsection_no_comm_maze_results}, the explored fraction decreases with additional agents. This likely occurs because the multiple cycles lead to frequent intersections between agents' exploration trees, adding redundant information. As agents reach the goal quickly, there is less time to explore other parts of the graph.
 
 \section{Tarry's Variants Performance}
 \label{section_result_tarry}
@@ -229,12 +274,12 @@ As expected, Figure \ref{fig_no_comm_fraction_histogram_tree} shows a fairly uni
 
 This section examines the results for Tarry's algorithm and its variants, specifically Tarry Tie-Breaker, Tarry Interval Priority, and Delayed Tarry.
 
-In addition to the previously mentioned metrics in Section \ref{subsection_no_comm_metrics}, this section introduces a metric for the relative difference in performance compared to the base Tarry algorithm. This measure is particularly useful for interpreting results when the algorithms' performances are very close on some datasets, providing a clearer picture of the improvements or regressions.
+In addition to the previously mentioned metrics in Section \ref{subsection_no_comm_metrics}, this section presents a relative difference in performance compared to the base Tarry algorithm. This approach is particularly useful for interpreting results when the performances of the algorithms are very close on some datasets, as relative values help to better visualize the differences when absolute values are too similar.
 
 \subsection{Perfect Maze Results} 
 \label{subsection_tarry_maze_results}
 
-The results for all maze sizes (10x10, 20x20, 30x30, and 40x40) are presented in Figures \ref{fig_tarry_steps_all_sizes_maze}, \ref{fig_tarry_fraction_all_sizes_maze}, and \ref{fig_tarry_steps_relative_all_sizes_maze}, demonstrating the performance of Tarry's algorithm and its variations across different maze dimensions. Figure \ref{fig_tarry_steps_all_sizes_maze} illustrates the number of steps taken by the algorithms, while Figure \ref{fig_tarry_fraction_all_sizes_maze} displays the fraction of the maze explored before reaching the goal, providing insights into exploration efficiency and coverage across maze sizes. Additionally, Figure \ref{fig_tarry_steps_relative_all_sizes_maze} presents the relative difference in pioneer steps compared to the original Tarry's algorithm, helping to better compare the variations, which may show similar behaviors.
+The results for all maze sizes (10x10, 20x20, 30x30, and 40x40) are shown in Figures \ref{fig_tarry_steps_all_sizes_maze}, \ref{fig_tarry_fraction_all_sizes_maze}, and \ref{fig_tarry_steps_relative_all_sizes_maze}, demonstrating the performance of Tarry's algorithm and its variations across different maze dimensions. Figure \ref{fig_tarry_steps_all_sizes_maze} illustrates the number of steps taken by the algorithms, while Figure \ref{fig_tarry_fraction_all_sizes_maze} displays the fraction of the maze explored before reaching the goal, providing insights into exploration efficiency and coverage across maze sizes. Additionally, Figure \ref{fig_tarry_steps_relative_all_sizes_maze} presents the relative difference in pioneer steps compared to the original Tarry's algorithm, helping to better compare the variations, which may show similar behaviors.
 
 \begin{figure}[H]
     \centering
@@ -302,9 +347,9 @@ The results for all maze sizes (10x10, 20x20, 30x30, and 40x40) are presented in
     \label{fig_tarry_fraction_all_sizes_maze}
 \end{figure}
  
-When analyzing Figures \ref{fig_tarry_steps_all_sizes_maze} and \ref{fig_tarry_steps_relative_all_sizes_maze}, it becomes evident that there is no uniform trend across all maze sizes. The Tarry Tie-Breaker and Delayed Tarry variations consistently outperform the standard Tarry algorithm, except in cases with a small number of agents. In those cases, early variations in exploration paths can significantly affect the outcome due to the extensive search required by each agent. However, a more intriguing behavior is observed with the Tarry Interval Priority variation. Although it performs similarly but slightly worse for smaller maze sizes, its performance improves for the largest maze analyzed. This behavior can be attributed to the benefits of dispersion and the additional information obtained through interval filling, which only becomes significant during more extensive exploration. In mazes with considerable depth and narrow width, interval filling initially causes conflicts, as agents may search for the start of their intervals in branches that have already been visited by others. This leads to delays as they look for their designated interval elsewhere. However, in larger mazes, these initial setbacks are offset by the advantages gained through the extra information during deeper exploration, which cannot be easily matched by Tarry's random choices.
+When analyzing Figures \ref{fig_tarry_steps_all_sizes_maze} and \ref{fig_tarry_steps_relative_all_sizes_maze}, it becomes evident that there is no uniform trend across all maze sizes. The Tarry Tie-Breaker and Delayed Tarry variations consistently outperform the standard Tarry algorithm, except in cases with a small number of agents. In those cases, early variations in exploration paths can significantly affect the outcome due to the extensive search required by each agent. However, a more intriguing behavior is observed with the Tarry Interval Priority variation. Although it performs similarly but slightly worse for smaller maze sizes, its performance improves for the largest maze analyzed. We conjecture this behavior can be attributed to the benefits of dispersion and the additional information obtained through interval filling, which only becomes significant during more extensive exploration. In mazes with considerable depth and narrow width, we believe interval filling initially causes conflicts, as agents may search for the start of their intervals in branches that have already been visited by others. However, in larger mazes, we assume these initial setbacks are offset by the advantages gained through the extra information during deeper exploration, which cannot be easily matched by Tarry's random choices.
 
-% TODO CONFERIR EXPLICACAO
+
 An interesting observation can also be made regarding the explored fraction, as shown in Figure \ref{fig_tarry_fraction_all_sizes_maze}. The results indicate that the Tarry Interval Priority algorithm consistently explores a smaller portion of the graph compared to the other variations. Since mazes have few leaf nodes and communication prevents agents from overlapping in explored branches, the use of intervals likely directs agents more efficiently toward unexplored areas, potentially allowing them to head directly to leaf nodes before finding the actual solution.
 
 
@@ -371,15 +416,87 @@ The results for the random trees, using the same sizes as in Section \ref{subsec
     \label{fig_tarry_fraction_all_sizes_tree} 
 \end{figure}
 
-According to Figures \ref{fig_tarry_steps_all_sizes_tree} and \ref{fig_tarry_steps_relative_all_sizes_tree}, the results show a distinct pattern compared to those observed in Section \ref{subsection_tarry_maze_results}. The Tarry Interval Priority variation consistently underperforms across all tree sizes, with the disparity becoming even more pronounced when the number of agents is small. This outcome is likely due to the wide structure of the trees, where each agent in this variation needs to explore many leaf nodes within its assigned interval, resulting in inefficiencies. In contrast, only the Tarry Tie-Breaker variation shows comparable or occasionally better performance than the baseline Tarry algorithm.% TODO EXPLAIN
+According to Figures \ref{fig_tarry_steps_all_sizes_tree} and \ref{fig_tarry_steps_relative_all_sizes_tree}, the results show a distinct pattern compared to those observed in Section \ref{subsection_tarry_maze_results}. The Tarry Interval Priority variation consistently underperforms across all tree sizes, with the disparity becoming even more pronounced when the number of agents is small. This outcome is likely due to the wide structure of the trees, where each agent in this variation needs to explore many leaf nodes within its assigned interval, resulting in inefficiencies. In contrast, only the Tarry Tie-Breaker shows small but consistent improvement for smaller number of nodes, although this advantage tends to disappear for larger trees.
+
 
 When examining Figure \ref{fig_tarry_fraction_all_sizes_tree}, a similar behavior to what was previously discussed in Figure \ref{fig_no_comm_fraction_all_sizes_tree} can be observed. The explored fraction displays a pattern that is largely independent of the strategy used, due to the high variability in the fraction of nodes explored across different tree instances.
 
 \subsection{Barabási-Albert Results} 
 \label{subsection_tarry_barabasi_albert_results}
 
-% TODO ADD RESULTS
-% TODO EXPLAIN RESULTS
-    
+The results for the Barabási-Albert graphs, using the same sizes as in Section \ref{subsection_no_comm_barabasi_albert_results}, are presented in Figures \ref{fig_tarry_steps_all_sizes_barabasi}, \ref{fig_tarry_fraction_all_sizes_barabasi}, and \ref{fig_tarry_steps_relative_all_sizes_barabasi}.
+
+
+\begin{figure}[H]
+    \centering
+    \qquad
+    \qquad
+    \subfloat[\centering Legend] 
+    {{\includegraphics[width=0.5\textwidth]{Cap3/tarry_var_steps_legend.pdf} }}
+    \newline
+    \subfloat[\centering 100-node Barabási-Albert]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__100_barabasi.pdf} }}
+    \qquad
+    \subfloat[\centering 250-node Barabási-Albert]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__250_barabasi.pdf} }}
+    \newline
+    \subfloat[\centering 500-node Barabási-Albert]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__500_barabasi.pdf} }}
+    \qquad
+    \subfloat[\centering 1000-node Barabási-Albert]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__1000_barabasi.pdf} }} 
+    \caption{Comparison of the pioneer's average steps across Tarry's algorithm and its variations for different sizes of Barabási-Albert graphs. The subfigures illustrate how algorithm performance changes with graph size.} 
+    \label{fig_tarry_steps_all_sizes_barabasi} 
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \qquad
+    \qquad
+    \subfloat[\centering Legend]
+    {{\includegraphics[width=0.5\textwidth]{Cap3/tarry_var_steps_legend_relative.pdf} }}
+    \newline
+    \subfloat[\centering 100-node Barabási-Albert]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__100_barabasi_relative.pdf} }}
+    \qquad 
+    \subfloat[\centering 250-node Barabási-Albert]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__250_barabasi_relative.pdf} }}
+    \newline
+    \subfloat[\centering 500-node Barabási-Albert]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__500_barabasi_relative.pdf} }}
+    \qquad
+    \subfloat[\centering 1000-node Barabási-Albert]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__1000_barabasi_relative.pdf} }} 
+    \caption{Relative difference in pioneer steps between Tarry's algorithm variants and the original Tarry's algorithm across different sizes of Barabási-Albert graphs. The subfigures illustrate how the relative performance changes with graph size.} 
+    \label{fig_tarry_steps_relative_all_sizes_barabasi}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \qquad
+    \qquad
+    \subfloat[\centering Legend]
+    {{\includegraphics[width=0.5\textwidth]{Cap3/tarry_var_fraction_legend.pdf} }} 
+    \newline 
+    \subfloat[\centering 100-node Barabási-Albert]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_fraction__100_barabasi.pdf} }}
+    \qquad
+    \subfloat[\centering 250-node Barabási-Albert]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_fraction__250_barabasi.pdf} }}
+    \newline 
+    \subfloat[\centering 500-node Barabási-Albert]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_fraction__500_barabasi.pdf} }}
+    \qquad
+    \subfloat[\centering 1000-node Barabási-Albert]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_fraction__1000_barabasi.pdf} }}
+    \caption{Comparison of the explored fraction across Tarry's algorithm and its variations for different sizes of Barabási-Albert graphs. The subfigures illustrate how the explored fraction changes with graph size.} 
+    \label{fig_tarry_fraction_all_sizes_barabasi} 
+\end{figure}
+
+Examining Figures \ref{fig_tarry_steps_all_sizes_barabasi} and \ref{fig_tarry_steps_relative_all_sizes_barabasi}, the poorer performance of the Tarry Interval Priority variation stands out. The results closely resemble those from the no-communication algorithms in \ref{subsection_no_comm_barabasi_albert_results}, likely due to the high connectivity in Barabási-Albert graphs. This structure accelerates exploration, often completing before an agent exhausts its interval, thus yielding similar outcomes.
+
+Additionally, while the Tie-Breaker and Delayed Tarry variations perform worse than base Tarry on smaller datasets, they tend to improve, becoming consistently comparable or superior as graph size increases.
+
+As expected, the explored fraction of the graph before the pioneer reaches the goal shows the same downward trend observed in \ref{subsection_no_comm_barabasi_albert_results}, with a smaller explored fraction as more agents are added. For larger Barabási-Albert graphs, the choice of algorithm has little impact on the explored fraction; however, for the smaller 100-node graph, Tarry's and the Tarry Tie-Breaker variation tend to explore less.
     
     

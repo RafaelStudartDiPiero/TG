@@ -1,18 +1,7 @@
-Graph theory, a pivotal field in mathematics and computer science, offers robust frameworks for modeling relationships and traversing graph structures.
-This research delves into graph exploration,
-crucial for applications like network routing, robotics, and procedural generation.
-As real-world applications often involve complex environments with time constraints,
-this study focuses on multi-agent systems for graph exploration,
-where multiple autonomous agents collaborate to optimize task distribution.
+Graph theory, a pivotal field in mathematics and computer science, offers robust frameworks for modeling relationships and traversing graph structures. This research delves into graph exploration, crucial for applications like network routing, robotics, and procedural generation. As real-world applications often involve complex environments with time constraints, such as search-and-rescue operations with drones, this study focuses on multi-agent systems for graph exploration, where multiple autonomous agents collaborate to optimize task distribution.
 
-This study's objective is to propose an efficient multi-agent algorithm for graph exploration without communication,
-a crucial need in scenarios where communication is impractical or impossible,
-such as deep-sea exploration or energy-constrained environments.
-Building on the method for perfect maze exploration detailed by \citen{Arthur2023},
-this study extends the approach to general graphs, that may include cycles.
-Several algorithmic variations, combining the proposed approach and Tarry's variation \cite{Kivelevitch2010}, were implemented in an effort to compare how different algorithms perform in various scenarios and to identify efficient use cases. Furthermore, the algorithms were reimplemented using a generic graph library instead of a specialized perfect maze library \cite{Naeem2021}.
+This work presents a modular framework structured into extensible classes, facilitating the addition of new algorithms and datasets. By moving beyond the constraints of perfect maze exploration \cite{Naeem2021}, we employed NetworkX \cite{Hagberg2008}—a general graph library—which allows for analyzing more diverse graph structures. This flexibility enabled comparisons across various datasets to reveal patterns in algorithm performance under different graph characteristics.
 
-By structuring the exploration into well-defined and extensible classes,
-the research offers a versatile framework for broader applications in multi-agent systems. This framework was used to evaluate different datasets, containing graphs with varying properties, paving the way for further advancements in autonomous graph exploration.
+This study's objective is to propose an efficient multi-agent algorithm for graph exploration without communication, a crucial need in scenarios where communication is impractical or impossible. Building on the method for perfect maze exploration detailed by \citen{Arthur2023}, this study extends the approach to general graphs, including those with cycles, and evaluates the algorithm's performance across three datasets of varying complexity. By establishing a benchmark for exploration efficiency, this research enables an assessment of the costs and benefits of incorporating communication in multi-agent strategies, providing a comparative baseline for future exploration algorithm development.
 
-% TODO:(RAFAEL): Change this intro 
+Additionally, this research incorporated heuristics and alternative strategies to enhance Tarry's algorithm, which traditionally relies on random neighbor selection. The resulting adaptations demonstrated performance improvements on specific datasets, illustrating how targeted selection processes can optimize exploration efficiency based on dataset properties. These insights pave the way for future research into more effective graph exploration strategies in autonomous systems.

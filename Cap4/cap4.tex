@@ -1,27 +1,13 @@
-This work presented an algorithm for graph exploration in a multi-agent system without communication, 
-expanding on the solution proposed by \citen{Arthur2023}.
-The flexibility provided by our framework,
-which no longer relies on the open-source perfect maze generator by \citen{Naeem2021},
-allows for expansion to various exploration policies and algorithmic variations.
-Additionally, the modular design of our system enables integration of new exploration
-strategies, paving the way for future advancements.
+This work presented an algorithm for multi-agent graph exploration without communication, expanding on the solution proposed by \citen{Arthur2023}. Given the flexibility of our implementation, we analyzed three different datasets beyond the original one by Arthur, validating our approach with previously obtained results and enabling a broader comparison across various datasets. This allowed us to investigate how different graph properties impact the performance of no-communication algorithms, establishing a baseline for exploration algorithms and providing a foundation to assess the impact of communication when evaluating distinct metrics.
 
-We conducted tests on 100 randomly generated 40x40 perfect mazes
-and compared the results across three algorithms: 
-our own, a backward interval variation, 
-and an extended version of Tarry's algorithm. 
-The results were validated against previous work \cite{Arthur2023},
-confirming the correctness and reliability of our approach.
+Alongside defining the impact of communication on performance, we implemented various heuristics and enhancements to Tarry's algorithm, which yielded significant performance changes under different conditions. These improvements show that additional information can be used to guide the selection process, improving performance based on knowledge of the graph structure for certain datasets.
 
-Looking forward, we aim to validate our algorithm
-against established graph generation algorithms,
-assessing its efficiency on a larger scale.
-Exploring the implementation of more advanced algorithms
-and optimizing the agents' decision-making processes will be essential
-for enhancing the applicability of our approach.
+Given the modular design of our framework, it can easily expand to new algorithms and datasets. This flexibility enables future evaluations across a wider range of datasets, helping determine if the performance patterns hold in different contexts and providing insight into effective strategies for specific exploration tasks.
 
-By advancing multi-agent graph exploration without communication,
-this research paves the way for innovations in autonomous systems,
-with potential applications across various domains to be explored in future research.
+In future research, introducing new metrics and test cases could deepen our understanding of the results, providing stronger support for our conjectures. This would help pinpoint the key properties that influence algorithm performance, offering a clearer basis for selecting the most suitable exploration strategy for each scenario, beyond relying solely on empirical analysis.
 
-% TODO:(RAFAEL): Change this Conclusion
+Our current experiments did not address collisions between agents, allowing multiple agents to occupy the same node at the same time. This simplified assumption enabled a clearer focus on evaluating exploration strategies. However, future studies could address agent collisions to simulate more realistic scenarios and analyze how such interactions affect the exploration results.
+
+Another area of interest lies in identifying particular cases where these algorithms achieve notably higher performance. By understanding the specific conditions under which each exploration strategy is most effective, we can target their practical applications in relevant fields more precisely.
+
+In conclusion, this research advances multi-agent graph exploration without communication, establishing benchmarks to evaluate the impact and performance of exploration algorithms and developing heuristics that significantly enhance established methods.
