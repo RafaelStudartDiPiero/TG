@@ -9,6 +9,7 @@ This section describes the datasets used to evaluate the performance of the algo
     \item Perfect Mazes: The dataset of perfect mazes \cite{Naeem2021} is the same as the one used by \citen{Arthur2023} and includes 250 mazes for each of four sizes: 10x10, 20x20, 30x30, and 40x40.
     \item Random Trees: The dataset of random trees was generated using the $random\_$ $unlabeled\_tree$ method from NetworkX \cite{Hagberg2008}. This function generates an unlabeled tree uniformly at random using Wilf's algorithm \cite{Wilf1981}, resulting in 250 trees for sizes: 100, 250, 500, 1000, and 1500 nodes. The goal node was chosen by randomly selecting one of the leaf nodes. Compared to the perfect mazes, these trees tend to be less deep and broader.
     \item Barabási-Albert Graphs: The dataset of Barabási-Albert graphs was generated using the dual Barabási-Albert preferential attachment method \cite{Moshiri2018} from NetworkX, specifically $dual\_barabasi\_albert\_graph$ function. This method constructs a random graph by incrementally adding new nodes that connect to existing nodes with a higher degree \cite{Barabasi1999}. For this dual approach, at each step of edge addition for a new node, it can be chosen whether the node will connect with either $n_1$ or $n_2$ edges, determined by a probability $p$ for $n_1$ and $1-p$ for $n_2$. In our case, $n_1$ is 2, $n_2$ is 3, and $p$ is set to 0.2. This approach results in networks that exhibit a power-law degree distribution, distinguishing them from the other datasets. The dataset includes graphs of sizes 100, 250, 500, 1000, and 1500 nodes.
+    \item Small-World Network: The Small-World Network dataset was generated using NetworkX's $navigable\_small\_world\_graph$ function \cite{Hagberg2008}. Nodes are organized in an $n \times n$ grid, where each node connects to its local neighbors. Additionally, each node has one long-range connection assigned with a probability inversely proportional to the lattice distance, given by $d((i,j),(k,l)) = |k-i| + |l-j|$, raised to the power $-r$ \cite{Kleinberg2000}. In this dataset, $q$ is set to 1, meaning each node has one additional long-range connection, and $r$ is set to 2.5. This configuration creates graphs of sizes 100, 250, 500, 1000 and 1500 nodes.
 \end{itemize}
 
 The sizes were chosen to approximately match the maze sizes used in \citen{Arthur2023} and to ensure that the computational demands for running all experiments remained manageable. For example, a 40x40 maze has 1600 cells, so graph sizes such as 1500 nodes were selected to provide a comparable level of complexity while keeping the analysis feasible across multiple runs.
@@ -33,6 +34,9 @@ Additionally, we include Table \ref{tab:nodes_after_contraction}, which shows th
         \hline
         Barabási-Albert & 10.69 & 21.17 & 33.65 & 57.04 & 66.10 \\ 
         \hline
+        Small-World & 0.004 & 0.22 & 0.002 & 0.23 & 0.001
+        \\
+        \hline
     \end{tabular}
 \end{table}
 
@@ -48,7 +52,10 @@ Additionally, we include Table \ref{tab:nodes_after_contraction}, which shows th
         \hline
         Random Trees & 34.76 & 85.64 & 172.22 & 345.41 & 516.53 \\ 
         \hline
-        Barabási-Albert & 21.17 & 46.70 & 81.21 & 149.26 & 191.41 \\ 
+        Barabási-Albert & 21.17 & 46.70 & 81.21 & 149.26 & 191.41 \\
+        \hline
+        Small-World & 1.01 & 1.22 & 1.00 & 1.23 & 1.00
+        \\
         \hline
     \end{tabular}
 \end{table}
@@ -65,12 +72,17 @@ Additionally, we include Table \ref{tab:nodes_after_contraction}, which shows th
         \hline
         Random Trees & 51.26 & 124.56 & 251.03 & 502.02 & 752.89 \\ 
         \hline
-        Barabási-Albert & 59.89 & 125.15 & 207.66 & 366.44 & 444.65 \\ 
+        Barabási-Albert & 59.89 & 125.15 & 207.66 & 366.44 & 444.65 \\
+        \hline
+        Small-World & 98.26 & 223.41 & 482.296 & 959.528 & 1442.376
+        \\
         \hline
     \end{tabular}
 \end{table}
 
-he results presented in the tables allow for a clear comparison of the datasets. The Barabási-Albert graphs exhibited the greatest average depth in the DFS exploration and the second highest number of leaf nodes, indicating their complexity. Notably, they were also the most affected by the contraction process, resulting in a significant reduction in node count. In contrast, the Random Trees dataset had the least depth and the highest average number of leaf nodes, showcasing its broader structure. Perfect Mazes, while exhibiting moderate depth and leaf nodes, did not undergo contraction, preserving their original node counts for valid metric comparisons.
+The results presented in the tables allow for a clear comparison of the datasets. The Barabási-Albert graphs exhibited the greatest average depth in the DFS exploration and the second highest number of leaf nodes, indicating their complexity. Notably, they were also the most affected by the contraction process, resulting in a significant reduction in node count. In contrast, the Random Trees dataset had the least depth and the highest average number of leaf nodes, showcasing its broader structure. Perfect Mazes, while exhibiting moderate depth and leaf nodes, did not undergo contraction, preserving their original node counts for valid metric comparisons.
+
+The Small-World dataset exhibits unique characteristics in Tables \ref{tab:average_depth} and \ref{tab:average_leaf_nodes}, where average depth approaches zero and the number of leaf nodes remains near one. This occurs due to the DFS traversal's fixed search order (North, East, South, West, followed by any other connected node), producing a nearly linear, degenerate tree structure where each parent node has only one child. Corridor contraction further simplifies this structure, reducing the tree to a single node, hence the minimal depth and single leaf node. Although this pattern implies a single agent almost always can traverse the grid without backtracking, additional agents can still enhance performance by distributing across the grid without adhering to the rigid search order, making this dataset suitable for our analysis.
 
 The analysis focuses on datasets and sizes that yield significant results, while all generated graphs can be found in the appendix.
 
@@ -265,6 +277,68 @@ The results for the Barabási-Albert graphs with 100, 250, 500, and 1000 nodes a
 As expected, performance improves with more agents, and Tarry's algorithm remains the most effective approach. However, for this dataset, the Backward Interval Filling algorithm shows no improvement over the basic exploration algorithm. We suspect this is because the Barabási-Albert graphs are highly connected and contain many cycles, leading each agent to form a distinct exploration tree. The same nodes often have significantly different intervals based on the paths taken by each agent. Consequently, each agent completes its initial interval and often reaches the goal before starting a second one.
 
 Unlike the trend observed in Section \ref{subsection_no_comm_maze_results}, the explored fraction decreases with additional agents. This likely occurs because the multiple cycles lead to frequent intersections between agents' exploration trees, adding redundant information. As agents reach the goal quickly, there is less time to explore other parts of the graph.
+
+\subsection{Small-World Results} 
+\label{subsection_no_comm_sw_results}
+
+The results for Small-World graphs with 100, 250, 500, and 1000 nodes are shown in Figures \ref{fig_no_comm_steps_all_sizes_sw} and \ref{fig_no_comm_fraction_all_sizes_sw}. These sizes were chosen to capture overall trends in exploration efficiency within computational limits for larger graphs. For the 100-node and 250-node graphs, up to 40 agents were used, while for the 500-node and 1000-node graphs, the maximum was limited to 30 agents due to performance constraints.
+
+\begin{figure}[H]
+    \centering
+    \qquad
+    \qquad
+    \subfloat[\centering Legend]
+    {{\includegraphics[width=0.5\linewidth]{Cap3/no_comm_steps_legend.pdf} }}
+    \newline
+    \subfloat[\centering 100-node Small-World]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_steps__100_sw.pdf} }}
+    \qquad
+    \subfloat[\centering 250-node Small-World]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_steps__250_sw.pdf} }}
+    \newline
+    \subfloat[\centering 500-node Small-World]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_steps__500_sw.pdf} }}
+    \qquad
+    \subfloat[\centering 1000-node Small-World]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_steps__1000_sw.pdf} }}
+    \caption{Comparison of the average steps taken by the pioneer across different no-communication algorithms and Tarry's algorithm for various sizes of Small-World graphs. The subfigures illustrate how algorithm performance varies with graph sizes.}
+    \label{fig_no_comm_steps_all_sizes_sw}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \qquad
+    \qquad
+    \subfloat[\centering Legend]
+    {{\includegraphics[width=0.5\linewidth]{Cap3/no_comm_fraction_legend.pdf} }}
+    \newline
+    \subfloat[\centering 100-node Small-World]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_fraction__100_sw.pdf} }}
+    \qquad
+    \subfloat[\centering 250-node Small-World]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_fraction__250_sw.pdf} }}
+    \newline
+    \subfloat[\centering 500-node Small-World]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_fraction__500_sw.pdf} }}
+    \qquad
+    \subfloat[\centering 1000-node Small-World]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_fraction__1000_sw.pdf} }}
+    \caption{Comparison of the explored fraction achieved by the pioneer across different no-communication algorithms and Tarry's algorithm for various sizes of Small-World graphs. The subfigures illustrate how coverage efficiency varies with graph sizes.}
+    \label{fig_no_comm_fraction_all_sizes_sw}
+\end{figure}
+
+
+In Figure \ref{fig_no_comm_steps_all_sizes_sw}, we see a similar trend to Section \ref{subsection_no_comm_barabasi_albert_results}: Tarry's algorithm consistently outperforms the other methods, with performance improving as the number of agents increases, while the Backward Interval Filling algorithm shows no gains over the basic exploration algorithm. This is likely for the same reason as with Barabási-Albert graphs; Small-World graphs are highly connected, and searches often complete before agents finish their assigned intervals. For both graph types, Tarry's algorithm outperforms the no-communication methods by 80.86\% and 84.11\%, respectively, with 30 agents on 1000-node graphs. While Small-World graphs' grid structure could potentially aid dispersion for non-communication algorithms, it seems to enhance Tarry's performance even more, resulting in this observed discrepancy.
+
+In Figure \ref{fig_no_comm_fraction_all_sizes_sw}, which shows the explored fraction before the pioneer reaches the goal, we see similarly noisy results as in Section \ref{subsection_no_comm_random_tree_results}. Tarry's algorithm generally explores a smaller portion of the graph, though the difference is not substantial. This variability likely stems from inconsistent exploration across instances; in some cases, agents must explore a significant portion of the graph to locate the goal, while in others, they explore very little. Tarry's average explored fraction for 1000 nodes with 20 agents is 46.17\%, with a standard deviation of 28.81\%, confirming this inconsistency. Figure \ref{fig_no_comm_fraction_histogram_sw} further illustrates the spread of these exploration results.
+
+\begin{figure}[H]
+    \centering 
+    \includegraphics[width=0.7\textwidth]{Cap3/no_comm_fraction_histogram_sw.png} 
+    \caption{Histogram of explored fractions for Small World Graphs with 1000 nodes and 20 agents using Tarry's Algorithm.} 
+    \label{fig_no_comm_fraction_histogram_sw}
+\end{figure}
+
 
 \section{Tarry's Variants Performance}
 \label{section_result_tarry}
@@ -499,4 +573,77 @@ Additionally, while the Tie-Breaker and Delayed Tarry variations perform worse t
 
 As expected, the explored fraction of the graph before the pioneer reaches the goal shows the same downward trend observed in \ref{subsection_no_comm_barabasi_albert_results}, with a smaller explored fraction as more agents are added. For larger Barabási-Albert graphs, the choice of algorithm has little impact on the explored fraction; however, for the smaller 100-node graph, Tarry's and the Tarry Tie-Breaker variation tend to explore less.
     
-    
+\subsection{Small-World Results} 
+\label{subsection_tarry_sw_results}
+
+The results for Small-World graphs, using the same sizes as in Section \ref{subsection_no_comm_sw_results} are presented in Figures \ref{fig_tarry_steps_all_sizes_sw}, \ref{fig_tarry_steps_relative_all_sizes_sw}, and \ref{fig_tarry_fraction_all_sizes_sw}.
+
+\begin{figure}[H]
+    \centering
+    \qquad
+    \qquad
+    \subfloat[\centering Legend] 
+    {{\includegraphics[width=0.5\textwidth]{Cap3/tarry_var_steps_legend.pdf} }}
+    \newline
+    \subfloat[\centering 100-node Small-World]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__100_sw.pdf} }}
+    \qquad
+    \subfloat[\centering 250-node Small-World]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__250_sw.pdf} }}
+    \newline
+    \subfloat[\centering 500-node Small-World]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__500_sw.pdf} }}
+    \qquad
+    \subfloat[\centering 1000-node Small-World]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__1000_sw.pdf} }} 
+    \caption{Comparison of the pioneer's average steps across Tarry's algorithm and its variations for different sizes of Small-World graphs. The subfigures illustrate how algorithm performance changes with graph size.} 
+    \label{fig_tarry_steps_all_sizes_sw} 
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \qquad
+    \qquad
+    \subfloat[\centering Legend]
+    {{\includegraphics[width=0.5\textwidth]{Cap3/tarry_var_steps_legend_relative.pdf} }}
+    \newline
+    \subfloat[\centering 100-node Small-World]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__100_sw_relative.pdf} }}
+    \qquad 
+    \subfloat[\centering 250-node Small-World]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__250_sw_relative.pdf} }}
+    \newline
+    \subfloat[\centering 500-node Small-World]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__500_sw_relative.pdf} }}
+    \qquad
+    \subfloat[\centering 1000-node Small-World]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__1000_sw_relative.pdf} }} 
+    \caption{Relative difference in pioneer steps between Tarry's algorithm variants and the original Tarry's algorithm across different sizes of Small-World graphs. The subfigures illustrate how the relative performance changes with graph size.} 
+    \label{fig_tarry_steps_relative_all_sizes_sw}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \qquad
+    \qquad
+    \subfloat[\centering Legend]
+    {{\includegraphics[width=0.5\textwidth]{Cap3/tarry_var_fraction_legend.pdf} }} 
+    \newline 
+    \subfloat[\centering 100-node Small-World]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_fraction__100_sw.pdf} }}
+    \qquad
+    \subfloat[\centering 250-node Small-World]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_fraction__250_sw.pdf} }}
+    \newline 
+    \subfloat[\centering 500-node Small-World]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_fraction__500_sw.pdf} }}
+    \qquad
+    \subfloat[\centering 1000-node Small-World]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_fraction__1000_sw.pdf} }}
+    \caption{Comparison of the explored fraction across Tarry's algorithm and its variations for different sizes of Small-World graphs. The subfigures illustrate how the explored fraction changes with graph size.} 
+    \label{fig_tarry_fraction_all_sizes_sw} 
+\end{figure}
+
+In analyzing the results in Figures \ref{fig_tarry_steps_all_sizes_sw} and \ref{fig_tarry_steps_relative_all_sizes_sw}, we find that the Tarry Interval Priority variation performs poorly. This is likely due to agents not completing their intervals, similar to the Backward Interval Filling results, which yield outcomes akin to the base exploration algorithm in Figure \ref{fig_no_comm_steps_all_sizes_sw}. Furthermore, the other variations show reduced performance on smaller datasets, while their influence is negligible in the largest dataset, where all methods yield comparable results. These findings suggest that the added complexity does not enhance performance; Tarry's algorithm disperses effectively enough that heuristics are unnecessary for finding the goal quickly. For instance, the average number of steps for the pioneer in the 1000-node case is around 27, which is just 2.7\% of the total number of nodes.
+
+Examining the explored fraction in Figure \ref{fig_tarry_fraction_all_sizes_sw}, we observe a similarly noisy behavior to that seen in Figure \ref{fig_no_comm_fraction_all_sizes_sw}. The explored fraction demonstrates considerable variability across instances, regardless of the variation applied. This indicates that there is no dominant solution for this metric, reflecting the inconsistency in exploration outcomes.
