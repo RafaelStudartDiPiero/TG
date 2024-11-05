@@ -12,7 +12,7 @@ Finally, Section \ref{section_method_tree_visualization} visualizes individual e
 
 In this section, we detail the modeling approach chosen to structure our problem,
 emphasizing the use of classes to achieve greater flexibility in our solution.
-The main classes include \textbf{Simulation},\textbf{Graph} and \textbf{Agent}, each of which will be defined in subsequent sections.
+The main classes include \textbf{Simulation}, \textbf{Graph} and \textbf{Agent}, each of which will be defined in subsequent sections.
 Figure \ref{fig:class_diagram} presents a simplified class diagram that illustrates the overall structure of our model.
 
 \begin{figure}[ht!]
@@ -285,7 +285,7 @@ incorporating modifications to handle previously visited nodes and potential cyc
 \begin{enumerate}
     \item \textbf{Initialization}
     \begin{itemize}
-        \item Each agent is assigned a unique identifier and a specific interval based on the Equation Set \ref{eq:interval_dispersion}.
+        \item Each agent is assigned a unique identifier and a specific interval based on Equation \ref{eq:interval_dispersion}.
         \item Each agent begins with an empty tree representation of the graph, representing the knowledge it has accumulated during the exploration. Since each agent independently explores the graph, their trees may differ, reflecting the order in which nodes are visited.
         \item All agents start at the same node, although the specific starting node is arbitrary.
         \item The starting node is assigned the interval $[0,1]$ and is added to the agent's tree.
@@ -325,7 +325,7 @@ The steps described in the \textbf{Initialization} topic are implemented in the 
 
         \State /* \textit{Calculating the convergence intervals} */
         \State /* \textit{This will be explained in Section \ref{section_method_mixed_radix}} */
-        \State intervals $\gets$ self.get\_neighbors\_intervals(unvisited\_neighbors)
+        \State intervals $\gets$ self.calculate\_neighbors\_intervals(unvisited\_neighbors)
         \State
         \State /* \textit{Checking for backtracking or cycle} */
         \ForAll{neighbor $n_{j}$ in unvisited\_neighbors}
@@ -431,14 +431,14 @@ we can transform this mixed radix notation into a numerical value:
 \end{align}
 
 
-The function $get\_neighbors\_intervals$ used in Algorithm \ref{alg:define_agent_next_step}
+The function $calculate\_neighbors\_intervals$ used in Algorithm \ref{alg:define_agent_next_step}
 is defined by this logic and the Equation \ref{eq:unary_mixed_radix} as can be seen in Algorithm \ref{alg:get_neighbors_intervals}
 
 \begin{algorithm}
-\caption{\textbf{Agent} - get\_neighbors\_intervals()}
+\caption{\textbf{Agent} - calculate\_neighbors\_intervals()}
 \label{alg:get_neighbors_intervals}
 \begin{algorithmic}
-    \Procedure{get\_neighbors\_intervals}{self, unvisited\_neighbors}:
+    \Procedure{calculate\_neighbors\_intervals}{self, unvisited\_neighbors}:
     \State /* \textit{Fetching current node interval } */
     \State current\_node\_interval $\gets$ self.known\_tree[self.current\_node].interval
     \State current\_interval\_size $\gets$ (current\_node\_interval[1]-current\_node\_interval[0])
@@ -456,7 +456,7 @@ is defined by this logic and the Equation \ref{eq:unary_mixed_radix} as can be s
 \end{algorithmic}
 \end{algorithm}
 
-To ensure precision in interval calculations, we use the BigNumber library (gmpy2) \cite{Martelli2015} instead of standard double-precision, which is limited to about 15 decimal places. For deeper datasets, as shown in Table \ref{tab:average_depth}, this approach is essential, as interval scales decrease by factors of $(1/2)^{depth}$. Using gmpy2 prevents rounding errors that could otherwise lead to inaccuracies in the path representation and each node's interval.
+To ensure precision in interval calculations, we use the BigNumber library gmpy2 \cite{Martelli2015} instead of standard double-precision, which is limited to about 15 decimal places. For deeper datasets, as shown in Table \ref{tab:average_depth}, this approach is essential, as interval scales decrease by factors of $(1/2)^{depth}$. Using gmpy2 prevents rounding errors that could otherwise lead to inaccuracies in the path representation and each node's interval.
 
 \section{Alternative Exploration Algorithms}
 \label{section_method_alt_exploration_alg}
@@ -464,7 +464,7 @@ To ensure precision in interval calculations, we use the BigNumber library (gmpy
 In our implementation, modifying and experimenting with variations of the exploration algorithm is simple.
 By simply altering the $define\_agent\_next\_step$ function in Algorithm \ref{alg:move_one_step}, we can easily incorporate different strategies based on the agent's current status or algorithm.
 
-In this work, we have explored five alternatives: one variation of our core algorithm and four adaptations of Tarry's algorithm.
+In this work, we have explored six alternatives: our core algorithmm, one variation of it and four adaptations of Tarry's algorithm.
 
 \subsection{Exploration Algorithm without Communication}
 \label{section_method_zero_comm}
@@ -472,7 +472,7 @@ In this work, we have explored five alternatives: one variation of our core algo
 \subsubsection{Backward Interval Filling}
 \label{section_backward_interval}
 
-The \textbf{Backward Interval Filling} algorithm extends the primary zero-communication strategy developed in this work. Instead of initiating a new Depth-First Search (DFS) traversal after completing a designated interval, agents continue exploring by traversing the next interval in reverse order. Next interval refers to the interval initially assigned to the next agent in the list from Equation \ref{eq:interval_dispersion}. Note that each agent is assigned both intervals from the start, so no communication is needed. For the last agent, whose interval ends at 1, its second interval is assigned as the first agent's interval, which starts at 0. Thus, once the agent finishes exploring its original interval, it moves up on its tree to the nearest common ancestor shared with the end of the next interval, then proceeds to move downwards to the end leaf of its second interval, which it will traverse in reverse order. This variation ensures that agents remain active even after completing their primary interval, enhancing overall graph coverage and reducing idle time. It takes advantage of the fact that the tree may be unbalanced; when one interval contains significantly fewer nodes than the next, the agent assigned to the smaller interval can finish quickly and then explore the larger interval from the opposite direction. For exemplo, in Figure \ref{fig:graph_dispersion_unfair}, the yellow agent, after traversing its interval, will traverse the red nodes in reverse order.
+The \textbf{Backward Interval Filling} algorithm extends the primary zero-communication strategy developed in this work. Instead of initiating a new Depth-First Search (DFS) traversal after completing a designated interval, agents continue exploring by traversing the next interval in reverse order. "Next interval" refers to the interval initially assigned to the next agent in the list from Equation \ref{eq:interval_dispersion}. Note that each agent is assigned both intervals from the start, so no communication is needed. For the last agent, whose interval ends at 1, its second interval is assigned as the first agent's interval, which starts at 0. Thus, once the agent finishes exploring its original interval, it moves up on its tree to the nearest common ancestor shared with the end of the next interval, then proceeds to move downwards to the end leaf of its second interval, which it will traverse in reverse order. This variation ensures that agents remain active even after completing their primary interval, enhancing overall graph coverage and reducing idle time. It takes advantage of the fact that the tree may be unbalanced; when one interval contains significantly fewer nodes than the next, the agent assigned to the smaller interval can finish quickly and then explore the larger interval from the opposite direction. For exemplo, in Figure \ref{fig:graph_dispersion_unfair}, the yellow agent, after traversing its interval, will traverse the red nodes in reverse order.
 
 \subsection{Exploration Strategies with Communication: Tarry Algorithm Variations}
 
@@ -483,11 +483,11 @@ This section presents several adaptations of Tarry's algorithm that utilize comm
 \subsubsection{Extended Tarry Algorith}
 \label{section_method_extended_tarry}
 
-The \textbf{Extended Tarry Algorithm}, proposed by \citen{Kivelevitch2010}, is an adaptation of Tarry's algorithm. In this approach, agents share information about visited nodes, enabling them to identify unvisited cells and determine the Last Common Location (LCL)—the most recent shared position among agents before diverging paths.The algorithm consists of two phases:
+The \textbf{Extended Tarry Algorithm}, proposed by \citen{Kivelevitch2010}, is an multi-agent adaptation of Tarry's algorithm. In this approach, agents share information about visited nodes, enabling them to identify unvisited cells and determine the Last Common Location (LCL) — the most recent shared position among agents before diverging paths.The algorithm consists of two phases:
 
 \begin{itemize}
     \item \textbf{Exploration Phase}: Each agent moves to unvisited cells, or to cells unvisited by itself, choosing arbitrarily among multiple options. If all cells have been visited, agents retreat to the last unvisited cell, marking cells as dead ends.
-    \item \textbf{Cooperative Backtracking Phase}:Once an agent finds the goal and is defined as the pioneer, other agents backtrack to the Last Common Location (LCL) with it and follow the pioneer's path to the goal.
+    \item \textbf{Cooperative Backtracking Phase}: Once an agent finds the goal and is defined as the pioneer, other agents backtrack to the Last Common Location (LCL) with it and follow the pioneer's path to the goal.
 \end{itemize}
 
 The functions $define\_next\_first\_phase\_tarry\_step$ and 
@@ -553,11 +553,11 @@ pioneer\_id, pioneer\_effective\_path, lcl}
 
 \subsubsection{Tarry Tie-Breaker Variation}
 
-In this variation, agents employ Tarry's algorithm but modify the selection process described in Algorithm \ref{alg:define_agent_next_first_phase_step}. Instead of randomly choosing among valid neighbors, agents prioritize their choices based on interval assignments derived from mixed radix path intervals. This enhancement aims to improve exploration efficiency by leveraging structured knowledge of the graph's structure to better disperse the agents.
+In this variation, agents employ Tarry's algorithm but modify the selection process described in Algorithm \ref{alg:define_agent_next_first_phase_step}. Instead of randomly choosing among valid neighbors, agents prioritize their choices based on interval assignments derived from mixed radix path intervals. This enhancement aims to better disperse the agents by having each one prioritize a specific section of the graph.
 
 \subsubsection{Tarry Interval Priority Variation}
 
-Each agent attempts to fill its assigned interval as described in Algorithm \ref{alg:define_agent_next_step}, but rather than using depth-first search (DFS) or backward filling once the interval is complete, it begins with Tarry's algorithm, as described in Algorithms \ref{alg:define_agent_next_first_phase_step} and \ref{alg:define_agent_next_second_phase_step}. This strategy seeks to leverage the additional information gathered during the interval search to enhance exploration efficiency and reduce redundant backtracking.
+Each agent traverses its assigned interval as described in Algorithm \ref{alg:define_agent_next_step}, but rather than using depth-first search (DFS) or backward filling once the interval is complete, it begins Tarry's algorithm, as described in Algorithms \ref{alg:define_agent_next_first_phase_step} and \ref{alg:define_agent_next_second_phase_step}. This strategy seeks to leverage the additional information gathered during the interval search to enhance exploration efficiency and reduce redundant backtracking.
 
 \subsubsection{Delayed Tarry Variation}
 
@@ -613,8 +613,8 @@ show the trees constructed by the 3 agents for the exploration displayed in Figu
 \end{figure}
     
 
-These visualizations illustrate how each agent independently builds its representation of the graph, adapting to imperfections and leading to varied exploration paths. In Figure \ref{fig_agent_3_tree}, the highlighted nodes, $(3, 4)$ and $(3, 4)\_0$, demonstrate how cycles can occur during exploration.
+These visualizations illustrate how each agent independently builds its representation of the graph, leading to varied exploration trees. In Figure \ref{fig_agent_3_tree}, the highlighted nodes, $(3, 4)$ and $(3, 4)\_0$, demonstrate how cycles can occur during exploration.
 
-Initially, node $(3, 4)$ was added to the tree when the agent discovered it while exploring the neighbors of node $(4, 4)$, even though it hadn't been visited yet. Later, as the exploration progressed, the agent reached node $(3, 4)$ while checking the neighbors of node $(3, 3)$, revealing a cycle. According to the method outlined in Section \ref{section_method_algorithm}, the original node $(3, 4)$ was removed from the agent's tree to maintain an acyclic structure. For demonstration purposes, a copy of the tree was created, and node $(3, 4)$ was re-added with a modified identifier (appending "\_0" to its ID) to visualize this occurrence.
+Initially, node $(3, 4)$ was added to the tree when the agent discovered it while exploring the neighbors of node $(4, 4)$, even though it hadn't been visited yet. Later, as the exploration progressed, the agent reached node $(3, 4)$ while checking the neighbors of node $(3, 3)$, revealing a cycle. According to the method outlined in Section \ref{section_method_algorithm}, the original node $(3, 4)$ was removed from the agent's tree to maintain an acyclic structure. For illustration purposes, a copy of the tree was created, and node $(3, 4)$ was re-added with a modified identifier (appending "\_0" to its ID) to visualize this occurrence.
 
 Finally, when node $(3, 4)$ was reached again while exploring the neighbors of node $(2, 4)$, the agent again removed it from its tree and added it as a child of node $(2, 4)$. This step-by-step process clarifies the presence of node $(3, 4)\_0$ in the figure, along with the edges connecting it to nodes $(4, 4)$ and $(3, 3)$, and the edge from node $(2, 4)$ indicating when node $(3, 4)$ was finally explored.

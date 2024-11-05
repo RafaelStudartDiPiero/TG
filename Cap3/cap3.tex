@@ -1,22 +1,22 @@
-This section presents the results of comparing the proposed no-communication algorithm with Tarry's algorithm, as well as analyzing Tarry's performance against its variants. We evaluate these approaches on different datasets, detailed in Section \ref{section_datasets}, to observe how distinct graph properties influence the efficiency of the solutions. Section \ref{section_result_no_comm} discusses the performance of the no-communication algorithms. Section \ref{section_result_tarry} then presents the analysis of Tarry's algorithm and its variants.
+This chapter presents the results of comparing the proposed no-communication algorithm with Tarry's algorithm, as well as analyzing Tarry's performance against its variants. We evaluate these approaches on different datasets, detailed in Section \ref{section_datasets}, to observe how distinct graph properties influence the efficiency of the solutions. Section \ref{section_result_no_comm} discusses the performance of the no-communication algorithms. Section \ref{section_result_tarry} then presents the analysis of Tarry's algorithm and its variants.
 
 \section{Datasets for Algorithm Evaluation} 
 \label{section_datasets}
 
-This section describes the datasets used to evaluate the performance of the algorithms. The datasets consist of three types of graphs:
+This section describes the datasets used to evaluate the performance of the algorithms. The datasets consist of four classes of graphs:
 
 \begin{itemize} 
     \item Perfect Mazes: The dataset of perfect mazes \cite{Naeem2021} is the same as the one used by \citen{Arthur2023} and includes 250 mazes for each of four sizes: 10x10, 20x20, 30x30, and 40x40.
     \item Random Trees: The dataset of random trees was generated using the $random\_$ $unlabeled\_tree$ method from NetworkX \cite{Hagberg2008}. This function generates an unlabeled tree uniformly at random using Wilf's algorithm \cite{Wilf1981}, resulting in 250 trees for sizes: 100, 250, 500, 1000, and 1500 nodes. The goal node was chosen by randomly selecting one of the leaf nodes. Compared to the perfect mazes, these trees tend to be less deep and broader.
     \item Barabási-Albert Graphs: The dataset of Barabási-Albert graphs was generated using the dual Barabási-Albert preferential attachment method \cite{Moshiri2018} from NetworkX, specifically $dual\_barabasi\_albert\_graph$ function. This method constructs a random graph by incrementally adding new nodes that connect to existing nodes with a higher degree \cite{Barabasi1999}. For this dual approach, at each step of edge addition for a new node, it can be chosen whether the node will connect with either $n_1$ or $n_2$ edges, determined by a probability $p$ for $n_1$ and $1-p$ for $n_2$. In our case, $n_1$ is 2, $n_2$ is 3, and $p$ is set to 0.2. This approach results in networks that exhibit a power-law degree distribution, distinguishing them from the other datasets. The dataset includes graphs of sizes 100, 250, 500, 1000, and 1500 nodes.
-    \item Small-World Network: The Small-World Network dataset was generated using NetworkX's $navigable\_small\_world\_graph$ function \cite{Hagberg2008}. Nodes are organized in an $n \times n$ grid, where each node connects to its local neighbors. Additionally, each node has one long-range connection assigned with a probability inversely proportional to the lattice distance, given by $d((i,j),(k,l)) = |k-i| + |l-j|$, raised to the power $-r$ \cite{Kleinberg2000}. In this dataset, $q$ is set to 1, meaning each node has one additional long-range connection, and $r$ is set to 2.5. This configuration creates graphs of sizes 100, 250, 500, 1000 and 1500 nodes.
+    \item Small-World Network: The Small-World Network dataset was generated using NetworkX's $navigable\_small\_world\_graph$ function \cite{Hagberg2008}. Nodes are organized in an $n \times n$ grid, where each node connects to its local neighbors. Additionally, each node has one long-range connection assigned with a probability inversely proportional to the manhattan distance, given by $d((i,j),(k,l)) = |k-i| + |l-j|$, raised to the power $-r$ \cite{Kleinberg2000}. In this dataset, $q$ is set to 1, meaning each node has one additional long-range connection, and $r$ is set to 2.5. This configuration creates graphs of sizes 100, 250, 500, 1000 and 1500 nodes.
 \end{itemize}
 
 The sizes were chosen to approximately match the maze sizes used in \citen{Arthur2023} and to ensure that the computational demands for running all experiments remained manageable. For example, a 40x40 maze has 1600 cells, so graph sizes such as 1500 nodes were selected to provide a comparable level of complexity while keeping the analysis feasible across multiple runs.
 
-For all datasets, after generating the graphs, nodes that did not contribute new decisions— specifically, those with a degree of 2 —were contracted. This contraction involves adding an edge between the node's two neighbors and removing the node itself. In the case of the perfect mazes dataset, this effectively eliminates every corridor. This removal process conserves memory and processing time, thus enhancing exploration efficiency and analysis, which particularly relevant for larger datasets. However, this process was not applied to the perfect mazes dataset used by \citen{Arthur2023}, as doing so would alter the structure of the mazes and affect the calculation of metrics, hindering valid comparisons.
+For all datasets, after generating the graphs, nodes that did not contribute new decisions— specifically, those with a degree of 2 —were contracted. This contraction involves adding an edge between the node's two neighbors and removing the node itself. In the case of a perfect maze, this effectively eliminates every corridor. This removal process conserves memory and processing time, thus enhancing exploration efficiency and analysis, which particularly relevant for larger datasets. However, this process was not applied to the perfect mazes dataset used by \citen{Arthur2023}, as doing so would alter the structure of the mazes and affect the calculation of metrics, hindering valid comparisons.
 
-Each dataset has distinct characteristics that can significantly influence the performance of the evaluated algorithms. To illustrate these effects, we present two tables: Table \ref{tab:average_depth} shows the average depth of a Depth-First Search (DFS) exploration for each generated graph, excluding cycles, while Table \ref{tab:average_leaf_nodes} displays the average number of leaf nodes resulting from the same DFS exploration.
+Each dataset has distinct characteristics that can significantly influence the performance of the evaluated algorithms. To illustrate these effects, we present two tables: Table \ref{tab:average_depth} shows the average depth, counting only meaningful choices, of a Depth-First Search (DFS) exploration for each generated graph, excluding cycles, while Table \ref{tab:average_leaf_nodes} displays the average number of leaf nodes resulting from the same DFS exploration.
 
 Additionally, we include Table \ref{tab:nodes_after_contraction}, which shows the average number of nodes remaining after the contraction process for each dataset. This table provides further insight into the structure of the datasets post-contraction.
 
@@ -82,9 +82,7 @@ Additionally, we include Table \ref{tab:nodes_after_contraction}, which shows th
 
 The results presented in the tables allow for a clear comparison of the datasets. The Barabási-Albert graphs exhibited the greatest average depth in the DFS exploration and the second highest number of leaf nodes, indicating their complexity. Notably, they were also the most affected by the contraction process, resulting in a significant reduction in node count. In contrast, the Random Trees dataset had the least depth and the highest average number of leaf nodes, showcasing its broader structure. Perfect Mazes, while exhibiting moderate depth and leaf nodes, did not undergo contraction, preserving their original node counts for valid metric comparisons.
 
-The Small-World dataset exhibits unique characteristics in Tables \ref{tab:average_depth} and \ref{tab:average_leaf_nodes}, where average depth approaches zero and the number of leaf nodes remains near one. This occurs due to the DFS traversal's fixed search order (North, East, South, West, followed by any other connected node), producing a nearly linear, degenerate tree structure where each parent node has only one child. Corridor contraction further simplifies this structure, reducing the tree to a single node, hence the minimal depth and single leaf node. Although this pattern implies a single agent almost always can traverse the grid without backtracking, additional agents can still enhance performance by distributing across the grid without adhering to the rigid search order, making this dataset suitable for our analysis.
-
-The analysis focuses on datasets and sizes that yield significant results, while all generated graphs can be found in the appendix.
+The Small-World dataset exhibits unique characteristics in Tables \ref{tab:average_depth} and \ref{tab:average_leaf_nodes}, where average depth approaches zero and the number of leaf nodes remains near one. This occurs due to the DFS traversal's fixed search order (North, East, South, West, followed by any other connected node), producing a nearly linear, degenerate tree structure where each parent node has only one child. Corridor contraction further simplifies this structure, reducing the tree to a single node, hence the minimal depth and single leaf node. Although this pattern implies a single agent almost always can traverse the grid without backtracking, additional agents can still enhance performance by distributing across the grid while following different search orders, making this dataset suitable for our analysis.
 
 
 \section{No-Communication Algorithms Performance}
@@ -115,8 +113,7 @@ The results for all maze sizes (10x10, 20x20, 30x30, and 40x40) are presented in
     \centering
     \qquad
     \qquad
-    \subfloat[\centering Legend]
-    {{\includegraphics[width=0.5\textwidth]{Cap3/no_comm_steps_legend.pdf} }}
+    \includegraphics[width=0.5\textwidth]{Cap3/no_comm_steps_legend.pdf}
     \newline
     \subfloat[\centering 10x10 Maze]
     {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_steps__10_by_10_maze.pdf} }}
@@ -137,8 +134,7 @@ The results for all maze sizes (10x10, 20x20, 30x30, and 40x40) are presented in
     \centering
     \qquad
     \qquad
-    \subfloat[\centering Legend]
-    {{\includegraphics[width=0.5\linewidth]{Cap3/no_comm_steps_legend.pdf} }}
+    \includegraphics[width=0.5\textwidth]{Cap3/no_comm_fraction_legend.pdf}
     \newline
     \subfloat[\centering 10x10 Maze]
     {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_fraction__10_by_10_maze.pdf} }}
@@ -166,14 +162,13 @@ Building on these findings, we compared the performance of our no-communication 
 \subsection{Random Tree Results} 
 \label{subsection_no_comm_random_tree_results}
 
-The results for the random trees of sizes 100, 500, and 1500 nodes are presented in Figure \ref{fig_no_comm_steps_all_sizes_tree}. These sizes were chosen because they effectively represent the trends observed for the metrics without needing to include every possible size. Figure \ref{fig_no_comm_steps_all_sizes_tree} shows the steps taken by the pioneer, while the Figure \ref{fig_no_comm_fraction_all_sizes_tree} shows the explored fraction.
+The results for the random trees of sizes 100, 500, 1000 and 1500 nodes are presented in Figure \ref{fig_no_comm_steps_all_sizes_tree}. These sizes were chosen because they effectively represent the trends observed for the metrics without needing to include every possible size. Figure \ref{fig_no_comm_steps_all_sizes_tree} shows the steps taken by the pioneer, while the Figure \ref{fig_no_comm_fraction_all_sizes_tree} shows the explored fraction.
 
 \begin{figure}[H]
     \centering
     \qquad
     \qquad
-    \subfloat[\centering Legend]
-    {{\includegraphics[width=0.5\linewidth]{Cap3/no_comm_steps_legend.pdf} }}
+    \includegraphics[width=0.5\textwidth]{Cap3/no_comm_steps_legend.pdf}
     \newline
     \subfloat[\centering 100-node Tree]
     {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_steps__100_tree.pdf} }}
@@ -181,6 +176,9 @@ The results for the random trees of sizes 100, 500, and 1500 nodes are presented
     \subfloat[\centering 500-node Tree]
     {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_steps__500_tree.pdf} }}
     \newline
+    \subfloat[\centering 1000-node Tree]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_steps__1000_tree.pdf} }}
+    \qquad
     \subfloat[\centering 1500-node Tree]
     {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_steps__1500_tree.pdf} }}
     \caption{Comparison of the average steps taken by the pioneer across different no-communication algorithms and Tarry's algorithm for various sizes of random trees. The subfigures illustrate how algorithm performance varies with tree sizes.}
@@ -191,8 +189,7 @@ The results for the random trees of sizes 100, 500, and 1500 nodes are presented
     \centering
     \qquad
     \qquad
-    \subfloat[\centering Legend]
-    {{\includegraphics[width=0.5\linewidth]{Cap3/no_comm_steps_legend.pdf} }}
+    \includegraphics[width=0.5\textwidth]{Cap3/no_comm_fraction_legend.pdf}
     \newline
     \subfloat[\centering 100-node Tree]
     {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_fraction__100_tree.pdf} }}
@@ -200,6 +197,9 @@ The results for the random trees of sizes 100, 500, and 1500 nodes are presented
     \subfloat[\centering 500-node Tree]
     {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_fraction__500_tree.pdf} }}
     \newline
+    \subfloat[\centering 1000-node Tree]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_fraction__1000_tree.pdf} }}
+    \qquad
     \subfloat[\centering 1500-node Tree]
     {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_fraction__1500_tree.pdf} }}
     \caption{Comparison of the explored fraction achieved by the pioneer across different no-communication algorithms and Tarry's algorithm for various sizes of random trees. The subfigures illustrate how coverage efficiency varies with tree sizes.}
@@ -234,8 +234,7 @@ The results for the Barabási-Albert graphs with 100, 250, 500, and 1000 nodes a
     \centering
     \qquad
     \qquad
-    \subfloat[\centering Legend]
-    {{\includegraphics[width=0.5\linewidth]{Cap3/no_comm_steps_legend.pdf} }}
+    \includegraphics[width=0.5\textwidth]{Cap3/no_comm_steps_legend.pdf}
     \newline
     \subfloat[\centering 100-node Barabási-Albert]
     {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_steps__100_barabasi.pdf} }}
@@ -256,8 +255,7 @@ The results for the Barabási-Albert graphs with 100, 250, 500, and 1000 nodes a
     \centering
     \qquad
     \qquad
-    \subfloat[\centering Legend]
-    {{\includegraphics[width=0.5\linewidth]{Cap3/no_comm_steps_legend.pdf} }}
+    \includegraphics[width=0.5\textwidth]{Cap3/no_comm_fraction_legend.pdf}
     \newline
     \subfloat[\centering 100-node Barabási-Albert]
     {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_fraction__100_barabasi.pdf} }}
@@ -287,8 +285,7 @@ The results for Small-World graphs with 100, 250, 500, and 1000 nodes are shown 
     \centering
     \qquad
     \qquad
-    \subfloat[\centering Legend]
-    {{\includegraphics[width=0.5\linewidth]{Cap3/no_comm_steps_legend.pdf} }}
+    \includegraphics[width=0.5\textwidth]{Cap3/no_comm_steps_legend.pdf}
     \newline
     \subfloat[\centering 100-node Small-World]
     {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_steps__100_sw.pdf} }}
@@ -309,8 +306,7 @@ The results for Small-World graphs with 100, 250, 500, and 1000 nodes are shown 
     \centering
     \qquad
     \qquad
-    \subfloat[\centering Legend]
-    {{\includegraphics[width=0.5\linewidth]{Cap3/no_comm_fraction_legend.pdf} }}
+    \includegraphics[width=0.5\textwidth]{Cap3/no_comm_fraction_legend.pdf}
     \newline
     \subfloat[\centering 100-node Small-World]
     {{\includegraphics[width=0.45\linewidth]{Cap3/no_comm_fraction__100_sw.pdf} }}
@@ -359,8 +355,7 @@ The results for all maze sizes (10x10, 20x20, 30x30, and 40x40) are shown in Fig
     \centering
     \qquad
     \qquad
-    \subfloat[\centering Legend]
-    {{\includegraphics[width=0.5\textwidth]{Cap3/no_comm_steps_legend.pdf} }}
+    \includegraphics[width=0.5\textwidth]{Cap3/tarry_var_steps_legend.pdf}
     \newline
     \subfloat[\centering 10x10 Maze]
     {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__10_by_10_maze.pdf} }}
@@ -381,8 +376,7 @@ The results for all maze sizes (10x10, 20x20, 30x30, and 40x40) are shown in Fig
     \centering
     \qquad
     \qquad
-    \subfloat[\centering Legend]
-    {{\includegraphics[width=0.5\textwidth]{Cap3/tarry_var_steps_legend_relative.pdf} }}
+    \includegraphics[width=0.5\textwidth]{Cap3/tarry_var_steps_legend_relative.pdf}
     \newline
     \subfloat[\centering 10x10 Maze]
     {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__10_by_10_maze_relative.pdf} }}
@@ -403,8 +397,7 @@ The results for all maze sizes (10x10, 20x20, 30x30, and 40x40) are shown in Fig
     \centering
     \qquad
     \qquad
-    \subfloat[\centering Legend]
-    {{\includegraphics[width=0.5\textwidth]{Cap3/tarry_var_fraction_legend.pdf} }}
+    \includegraphics[width=0.5\textwidth]{Cap3/tarry_var_fraction_legend.pdf}
     \newline
     \subfloat[\centering 10x10 Maze]
     {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_fraction__10_by_10_maze.pdf} }}
@@ -437,8 +430,7 @@ The results for the random trees, using the same sizes as in Section \ref{subsec
     \centering
     \qquad
     \qquad
-    \subfloat[\centering Legend] 
-    {{\includegraphics[width=0.5\textwidth]{Cap3/tarry_var_steps_legend.pdf} }}
+    \includegraphics[width=0.5\textwidth]{Cap3/tarry_var_steps_legend.pdf}
     \newline
     \subfloat[\centering 100-node Tree]
     {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__100_tree.pdf} }}
@@ -446,6 +438,9 @@ The results for the random trees, using the same sizes as in Section \ref{subsec
     \subfloat[\centering 500-node Tree]
     {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__500_tree.pdf} }}
     \newline
+    \subfloat[\centering 1000-node Tree]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__1000_tree.pdf} }}
+    \qquad
     \subfloat[\centering 1500-node Tree]
     {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__1500_tree.pdf} }} 
     \caption{Comparison of the pioneer's average steps across Tarry's algorithm and its variations for different sizes of random trees. The subfigures illustrate how algorithm performance changes with tree size.} 
@@ -456,8 +451,7 @@ The results for the random trees, using the same sizes as in Section \ref{subsec
     \centering
     \qquad
     \qquad
-    \subfloat[\centering Legend]
-    {{\includegraphics[width=0.5\textwidth]{Cap3/tarry_var_steps_legend_relative.pdf} }}
+    \includegraphics[width=0.5\textwidth]{Cap3/tarry_var_steps_legend_relative.pdf}
     \newline
     \subfloat[\centering 100-node Tree]
     {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__100_tree_relative.pdf} }}
@@ -465,6 +459,9 @@ The results for the random trees, using the same sizes as in Section \ref{subsec
     \subfloat[\centering 500-node Tree]
     {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__500_tree_relative.pdf} }}
     \newline
+    \subfloat[\centering 1000-node Tree]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__1000_tree_relative.pdf} }}
+    \qquad 
     \subfloat[\centering 1500-node Tree]
     {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__1500_tree_relative.pdf} }} 
     \caption{Relative difference in pioneer steps between Tarry's algorithm variants and the original Tarry's algorithm across different sizes of random trees. The subfigures illustrate how the relative performance changes with tree size.} 
@@ -475,8 +472,7 @@ The results for the random trees, using the same sizes as in Section \ref{subsec
     \centering
     \qquad
     \qquad
-    \subfloat[\centering Legend]
-    {{\includegraphics[width=0.5\textwidth]{Cap3/tarry_var_fraction_legend.pdf} }} 
+    \includegraphics[width=0.5\textwidth]{Cap3/tarry_var_fraction_legend.pdf} 
     \newline 
     \subfloat[\centering 100-node Tree]
     {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_fraction__100_tree.pdf} }}
@@ -484,6 +480,9 @@ The results for the random trees, using the same sizes as in Section \ref{subsec
     \subfloat[\centering 500-node Tree]
     {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_fraction__500_tree.pdf} }}
     \newline 
+    \subfloat[\centering 1000-node Tree]
+    {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_fraction__1000_tree.pdf} }}
+    \qquad
     \subfloat[\centering 1500-node Tree]
     {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_fraction__1500_tree.pdf} }}
     \caption{Comparison of the explored fraction across Tarry's algorithm and its variations for different sizes of random trees. The subfigures illustrate how the explored fraction changes with tree size.} 
@@ -505,8 +504,7 @@ The results for the Barabási-Albert graphs, using the same sizes as in Section 
     \centering
     \qquad
     \qquad
-    \subfloat[\centering Legend] 
-    {{\includegraphics[width=0.5\textwidth]{Cap3/tarry_var_steps_legend.pdf} }}
+    \includegraphics[width=0.5\textwidth]{Cap3/tarry_var_steps_legend.pdf}
     \newline
     \subfloat[\centering 100-node Barabási-Albert]
     {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__100_barabasi.pdf} }}
@@ -523,12 +521,12 @@ The results for the Barabási-Albert graphs, using the same sizes as in Section 
     \label{fig_tarry_steps_all_sizes_barabasi} 
 \end{figure}
 
+
 \begin{figure}[H]
     \centering
     \qquad
     \qquad
-    \subfloat[\centering Legend]
-    {{\includegraphics[width=0.5\textwidth]{Cap3/tarry_var_steps_legend_relative.pdf} }}
+    \includegraphics[width=0.5\textwidth]{Cap3/tarry_var_steps_legend_relative.pdf}
     \newline
     \subfloat[\centering 100-node Barabási-Albert]
     {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__100_barabasi_relative.pdf} }}
@@ -549,8 +547,7 @@ The results for the Barabási-Albert graphs, using the same sizes as in Section 
     \centering
     \qquad
     \qquad
-    \subfloat[\centering Legend]
-    {{\includegraphics[width=0.5\textwidth]{Cap3/tarry_var_fraction_legend.pdf} }} 
+    \includegraphics[width=0.5\textwidth]{Cap3/tarry_var_fraction_legend.pdf}
     \newline 
     \subfloat[\centering 100-node Barabási-Albert]
     {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_fraction__100_barabasi.pdf} }}
@@ -569,7 +566,7 @@ The results for the Barabási-Albert graphs, using the same sizes as in Section 
 
 Examining Figures \ref{fig_tarry_steps_all_sizes_barabasi} and \ref{fig_tarry_steps_relative_all_sizes_barabasi}, the poorer performance of the Tarry Interval Priority variation stands out. The results closely resemble those from the no-communication algorithms in \ref{subsection_no_comm_barabasi_albert_results}, likely due to the high connectivity in Barabási-Albert graphs. This structure accelerates exploration, often completing before an agent exhausts its interval, thus yielding similar outcomes.
 
-Additionally, while the Tie-Breaker and Delayed Tarry variations perform worse than base Tarry on smaller datasets, they tend to improve, becoming consistently comparable or superior as graph size increases.
+Additionally, while the Tie-Breaker and Delayed Tarry variations perform worse than base Tarry on smaller datasets, they tend to improve, becoming consistently comparable or slightly superior as graph size increases.
 
 As expected, the explored fraction of the graph before the pioneer reaches the goal shows the same downward trend observed in \ref{subsection_no_comm_barabasi_albert_results}, with a smaller explored fraction as more agents are added. For larger Barabási-Albert graphs, the choice of algorithm has little impact on the explored fraction; however, for the smaller 100-node graph, Tarry's and the Tarry Tie-Breaker variation tend to explore less.
     
@@ -582,8 +579,7 @@ The results for Small-World graphs, using the same sizes as in Section \ref{subs
     \centering
     \qquad
     \qquad
-    \subfloat[\centering Legend] 
-    {{\includegraphics[width=0.5\textwidth]{Cap3/tarry_var_steps_legend.pdf} }}
+    \includegraphics[width=0.5\textwidth]{Cap3/tarry_var_steps_legend.pdf}
     \newline
     \subfloat[\centering 100-node Small-World]
     {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__100_sw.pdf} }}
@@ -604,8 +600,7 @@ The results for Small-World graphs, using the same sizes as in Section \ref{subs
     \centering
     \qquad
     \qquad
-    \subfloat[\centering Legend]
-    {{\includegraphics[width=0.5\textwidth]{Cap3/tarry_var_steps_legend_relative.pdf} }}
+    \includegraphics[width=0.5\textwidth]{Cap3/tarry_var_steps_legend_relative.pdf}
     \newline
     \subfloat[\centering 100-node Small-World]
     {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_steps__100_sw_relative.pdf} }}
@@ -626,8 +621,7 @@ The results for Small-World graphs, using the same sizes as in Section \ref{subs
     \centering
     \qquad
     \qquad
-    \subfloat[\centering Legend]
-    {{\includegraphics[width=0.5\textwidth]{Cap3/tarry_var_fraction_legend.pdf} }} 
+    \includegraphics[width=0.5\textwidth]{Cap3/tarry_var_fraction_legend.pdf}
     \newline 
     \subfloat[\centering 100-node Small-World]
     {{\includegraphics[width=0.45\linewidth]{Cap3/tarry_var_fraction__100_sw.pdf} }}
