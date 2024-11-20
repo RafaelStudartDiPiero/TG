@@ -395,6 +395,8 @@ The steps described in the \textbf{Initialization} topic are implemented in the 
 \end{algorithmic}
 \end{algorithm}
 
+To better understand the proposed algorithm, Section \ref{section_appendix_step_by_step} in the Appendix provides a step-by-step example of its execution on the graph shown in Figure \ref{fig_imperfect_maze_exploration}. It explains how the trees in Figures \ref{fig_agent_1_tree}, \ref{fig_agent_2_tree}, and \ref{fig_agent_3_tree} are generated.
+
 \section{Mixed Radix Path Representation}
 \label{section_method_mixed_radix}
 
@@ -412,8 +414,37 @@ Instead, it only requires the current node's convergence interval and its edges 
     \item When the agent needs to return to a parent node, it removes the last value appended to the mixed radix representation, effectively backtracking to the previous decision point.
 \end{itemize}
 
-To illustrate this concept, we present the mixed radix path representation between the \textit{Starting Point} and \textit{Goal} from the
-Figure \ref{fig:graph_dispersion_unfair}.
+
+To illustrate this concept, we present Figures \ref{fig_blue_agent_step_0}, \ref{fig_blue_agent_step_1}, \ref{fig_blue_agent_step_2}, and \ref{fig_blue_agent_step_3}, which depict the progression of the Blue agent from the starting node to the goal in Figure \ref{fig:graph_dispersion_unfair}. Figure \ref{fig_blue_agent_step_0} shows the agent at the starting node before taking the first step. Figures \ref{fig_blue_agent_step_1}, \ref{fig_blue_agent_step_2}, and \ref{fig_blue_agent_step_3} display the first three steps taken by the agent. Each figure explicitly details the path at that step and the intervals calculated for each child of the current node. Additionally, the mixed radix path representation between the \textit{Starting Point} and \textit{Goal} for the same exploration is provided, along with an example of how it can be converted into a numerical value to calculate the corresponding interval.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{Cap2/blue_agent_radix_0_step.png}
+    \caption{Blue agent at the starting node of graph from Figure \ref{fig:graph_dispersion_unfair}.}
+    \label{fig_blue_agent_step_0}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{Cap2/blue_agent_radix_1_step.png}
+    \caption{Blue agent taking its first step in the graph from Figure \ref{fig:graph_dispersion_unfair}.}
+    \label{fig_blue_agent_step_1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{Cap2/blue_agent_radix_2_step.png}
+    \caption{Blue agent taking its second step in the graph from Figure \ref{fig:graph_dispersion_unfair}.}
+    \label{fig_blue_agent_step_2}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{Cap2/blue_agent_radix_3_step.png}
+    \caption{Blue agent taking its third step in the graph from Figure \ref{fig:graph_dispersion_unfair}.}
+    \label{fig_blue_agent_step_3}
+\end{figure}
+
 
 \begin{equation}
     x = 0_{2}I_{1}2_{3}2_{3}
@@ -427,7 +458,7 @@ we can transform this mixed radix notation into a numerical value:
     & A=[0,I,2,2]\\
     & M=[2,1,3,3]\\
     & U=[0,2,3]\\
-    & x = \sum_{k \in U} a_{k} \prod_{j=0}^{k} \frac{1}{m_j} \approx 0.4444444
+    & x = \sum_{k \in U} a_{k} \prod_{j=0}^{k} \frac{1}{m_j} = \dfrac{4}{9} \approx 0.4444444
 \end{align}
 
 
